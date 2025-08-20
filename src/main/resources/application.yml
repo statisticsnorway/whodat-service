@@ -1,0 +1,21 @@
+micronaut:
+  application:
+    name: whodat-service
+  router:
+    static-resources:
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+    logger:
+      levels:
+        no.ssb.whodat.service: INFO
+    openapi:
+      views:
+        spec: |
+          mapping.path=classpath:META-INF/swagger,
+          swagger-ui.enabled=true,
+          swagger-ui.js.url=/swagger-ui/res/,
+          swagger-ui.tagsSorter=Function=(a => a),

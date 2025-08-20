@@ -1,5 +1,5 @@
 applicationType: default
-defaultPackage: whodat.service
+defaultPackage: no.ssb.whodat.service
 testFramework: junit
 sourceLanguage: kotlin
 buildTool: gradle_kotlin
