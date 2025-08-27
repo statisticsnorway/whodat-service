@@ -11,7 +11,7 @@ plugins {
 version = "0.1"
 group = "no.ssb.whodat"
 
-val kotlinVersion= project.properties["kotlinVersion"]
+val kotlinVersion = project.properties["kotlinVersion"]
 repositories {
     mavenCentral()
 }
@@ -22,8 +22,8 @@ dependencies {
     ksp("io.micronaut.openapi:micronaut-openapi")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
     implementation("io.micronaut.serde:micronaut-serde-jackson")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation("io.micronaut.openapi:micronaut-openapi-annotations")
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut.gcp:micronaut-gcp-common")
@@ -35,14 +35,12 @@ dependencies {
     testImplementation("io.micronaut:micronaut-http-client")
 }
 
-
 application {
     mainClass = "no.ssb.whodat.ApplicationKt"
 }
 java {
     sourceCompatibility = JavaVersion.toVersion("21")
 }
-
 
 graalvmNative.toolchainDetection = false
 
@@ -91,7 +89,7 @@ tasks.withType<Jar> {
     dependsOn(configurations.runtimeClasspath)
 }
 
-tasks.register<JavaExec>("runLocal"){
+tasks.register<JavaExec>("runLocal") {
     mainClass.set("no.ssb.whodat.ApplicationKt")
     classpath = sourceSets.main.get().runtimeClasspath
     jvmArgs = listOf("-Dmicronaut.environments=local")
@@ -100,5 +98,3 @@ tasks.register<JavaExec>("runLocal"){
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
     jdkVersion = "21"
 }
-
-
