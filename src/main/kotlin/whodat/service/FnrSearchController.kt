@@ -5,15 +5,10 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Post
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
 import io.micronaut.serde.annotation.Serdeable
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.yield
+import kotlinx.coroutines.*
 import no.ssb.whodat.gcp.GCPSecretManagerClient
 import whodat.service.MaskinportenGuardianClient
-import java.io.File
 import java.util.Base64
 
 @Serdeable
