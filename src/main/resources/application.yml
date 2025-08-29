@@ -1,6 +1,8 @@
 micronaut:
   application:
     name: whodat-service
+  server:
+    port: 9191
   router:
     static-resources:
       swagger:
@@ -12,6 +14,8 @@ micronaut:
     logger:
       levels:
         no.ssb.whodat.service: INFO
+        io.micronaut.security: INFO
+        io.micronaut.security.token.jwt.validator: DEBUG
     openapi:
       views:
         spec: |
@@ -19,3 +23,34 @@ micronaut:
           swagger-ui.enabled=true,
           swagger-ui.js.url=/swagger-ui/res/,
           swagger-ui.tagsSorter=Function=(a => a),
+  security:
+    enabled: true
+    intercept-url-map:
+      - pattern: /swagger-ui/**
+        httpMethod: GET
+        access: isAnonymous()
+      - pattern: /swagger/**
+        httpMethod: GET
+        access: isAnonymous()
+      - pattern: /health/**
+        http-method: GET
+        access: isAnonymous()
+      - pattern: /metrics/**
+        http-method: GET
+        access: isAnonymous()
+      - pattern: /prometheus/**
+        http-method: GET
+        access: isAnonymous()
+      - pattern: /**
+        access: isAuthenticated()
+
+    token:
+      name-key: email
+      jwt:
+        signatures:
+          jwks-client:
+            http-client:
+              enabled: false
+
+    basic-auth:
+      enabled: false
