@@ -30,6 +30,8 @@ class GCPSecretManagerClient(
     @Property(name = "guardian.mp-client-id")
     lateinit var mpClientId: String
 
+    fun authString(): String = "${clientId}:${clientSecret}"
+
     @EventListener
     fun onStartup(event: StartupEvent?) {
         val response =
@@ -38,7 +40,7 @@ class GCPSecretManagerClient(
                     .newBuilder()
                     .setName(
                         SecretVersionName
-                            .ofProjectSecretSecretVersionName(
+                            .of(
                                 project,
                                 "$teamUniformName-ssb-maskinporten-$mpClientId-credentials",
                                 "latest",

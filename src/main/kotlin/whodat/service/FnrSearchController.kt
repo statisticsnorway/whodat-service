@@ -1,18 +1,15 @@
 package no.ssb.whodat.service
 
-import com.mycompany.model.Folkeregisterettilgjengeliggjoeringhendelsev1bulkrequestHendelseBulkoppslagRequest
-import com.mycompany.model.Folkeregisterettilgjengeliggjoeringhendelsev1bulkresponseHendelseBulkoppslagResponse
 import com.mycompany.model.Folkeregisterettilgjengeliggjoeringpersonv1Folkeregisterperson
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Post
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
 import io.micronaut.serde.annotation.Serdeable
+import kotlinx.coroutines.*
 import no.ssb.whodat.gcp.GCPSecretManagerClient
 import whodat.service.MaskinportenGuardianClient
-import java.io.File
+import java.util.Base64
 
 @Serdeable
 data class FindPersonsRequest(
@@ -26,66 +23,60 @@ private class FnrSearchController(
     private val gcpSecretManagerClient: GCPSecretManagerClient,
     private val fregClient: FregClient,
 ) {
-    @Post("/search")
-    @ExecuteOn(TaskExecutors.BLOCKING)
-    fun searchFnr(
-        @Body request: FregClientRequest,
-    ): HttpResponse<FregClientResponse> {
-        val authString = "${gcpSecretManagerClient.clientId}:${gcpSecretManagerClient.clientSecret}"
-        val encoded =
-            java.util.Base64
-                .getEncoder()
-                .encodeToString(authString.toByteArray())
-        val keycloakResponse =
+    companion object {
+        private fun toBase64(auth: String): String =
+            Base64.getEncoder().encodeToString(auth.toByteArray())
+    }
+
+    /*
+      Handles the double key exchange for 'maskinporten' and 'maskinporten guardian' which consists of:
+        1. Fetching an access token for 'maskinporten' guardian from keycloak
+        2. Fetching a 'maskinporten' token from 'maskingporten' guardian
+
+      The entire flow here can be described as keycloak -> 'maskinporten guardian' -> 'maskinporten'
+     */
+    private suspend fun maskinPortenTokenKeyExchange(): String = coroutineScope {
+        val maskinPortenGuardianAuth: String = toBase64(gcpSecretManagerClient.authString())
+        val keycloakResponse = async {
             keycloakClient.fetchAccessToken(
-                "Basic $encoded",
+                "Basic $maskinPortenGuardianAuth",
                 mapOf(
                     "grant_type" to "client_credentials",
                 ),
             )
+        }.await()
 
-        val maskinPortenResponse =
+        val maskinPortenResponse = async {
             maskinPortenGuardianClient.fetchAccessToken(
                 authorization = "Bearer ${keycloakResponse.accessToken}",
                 emptyMap(),
             )
+        }.await()
 
-        val file = File("tester.txt")
-        file.writeText(maskinPortenResponse.accessToken)
+        return@coroutineScope maskinPortenResponse.accessToken
 
-        val results = fregClient.searchFnr("Bearer ${maskinPortenResponse.accessToken}", request)
-        return HttpResponse.ok(results)
+    }
+    @Post("/search")
+    suspend fun searchFnr(
+        @Body request: FregClientRequest,
+    ): HttpResponse<FregClientResponse> = coroutineScope {
+        val maskinPortenToken = maskinPortenTokenKeyExchange()
+
+        val results = fregClient.searchFnr("Bearer $maskinPortenToken", request)
+        return@coroutineScope HttpResponse.ok(results)
     }
 
     @Post("/findpersons")
-    @ExecuteOn(TaskExecutors.BLOCKING)
-    fun findPersons(
+    suspend fun findPersons(
         @Body request: FindPersonsRequest,
-    ): HttpResponse<Folkeregisterettilgjengeliggjoeringpersonv1Folkeregisterperson> {
-        val authString = "${gcpSecretManagerClient.clientId}:${gcpSecretManagerClient.clientSecret}"
-        val encoded =
-            java.util.Base64
-                .getEncoder()
-                .encodeToString(authString.toByteArray())
-        val keycloakResponse =
-            keycloakClient.fetchAccessToken(
-                "Basic $encoded",
-                mapOf(
-                    "grant_type" to "client_credentials",
-                ),
-            )
+    ): HttpResponse<Folkeregisterettilgjengeliggjoeringpersonv1Folkeregisterperson> = coroutineScope {
+        val maskinPortenToken = maskinPortenTokenKeyExchange()
 
-        val maskinPortenResponse =
-            maskinPortenGuardianClient.fetchAccessToken(
-                authorization = "Bearer ${keycloakResponse.accessToken}",
-                emptyMap(),
-            )
-
-        val file = File("tester.txt")
-        file.writeText(maskinPortenResponse.accessToken)
-
-        val results = fregClient.findPersons("Bearer ${maskinPortenResponse.accessToken}", request.foedselsEllerDNummer)
-
-        return HttpResponse.ok(results)
+        return@coroutineScope HttpResponse.ok(
+        fregClient.findPersons(
+            "Bearer $maskinPortenToken",
+            request.foedselsEllerDNummer
+          )
+        )
     }
 }
