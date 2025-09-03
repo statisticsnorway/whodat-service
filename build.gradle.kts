@@ -1,11 +1,13 @@
+import com.google.devtools.ksp.KspExperimental
+
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "2.2.10"
-    id("org.jetbrains.kotlin.plugin.allopen") version "2.2.10"
-    id("com.google.devtools.ksp") version "2.2.10-2.0.2"
-    id("io.micronaut.application") version "4.5.3"
-    id("com.gradleup.shadow") version "8.3.6"
-    id("io.micronaut.aot") version "4.5.3"
-    id("io.micronaut.openapi") version "4.5.3"
+    alias(libs.plugins.jvm)
+    alias(libs.plugins.allopen)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.micronaut.application)
+    alias(libs.plugins.gradle.shadow)
+    alias(libs.plugins.micronaut.aot)
+    alias(libs.plugins.micronaut.openapi)
 }
 
 version = "0.1"
@@ -17,26 +19,25 @@ repositories {
 }
 
 dependencies {
-    ksp("io.micronaut:micronaut-http-validation")
-    ksp("io.micronaut.serde:micronaut-serde-processor")
-    ksp("io.micronaut.openapi:micronaut-openapi")
-    implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
-    implementation("io.micronaut.serde:micronaut-serde-jackson")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
-    implementation("io.micronaut.openapi:micronaut-openapi-annotations")
-    annotationProcessor("io.micronaut.security:micronaut-security-annotations")
-    implementation("io.micronaut.security:micronaut-security")
-    implementation("io.micronaut.security:micronaut-security-jwt")
-    implementation("io.micronaut:micronaut-http-client")
-    implementation("io.micronaut.gcp:micronaut-gcp-common")
-    implementation("io.micronaut.gcp:micronaut-gcp-secret-manager")
-    implementation("org.yaml:snakeyaml")
-    compileOnly("io.micronaut:micronaut-http-client")
-    runtimeOnly("ch.qos.logback:logback-classic")
-    runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
-    testImplementation("io.micronaut:micronaut-http-client")
+    ksp(libs.micronaut.http.validation)
+    ksp(libs.micronaut.serde.processor)
+    ksp(libs.micronaut.openapi)
+    implementation(libs.micronaut.kotlin.runtime)
+    implementation(libs.micronaut.serde.jackson)
+    implementation(libs.kotlin.reflect)
+    implementation(libs.kotlin.stdlib.jdk8)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.micronaut.openapi.annotations)
+    implementation(libs.micronaut.security.jwt)
+    implementation(libs.micronaut.http.client)
+    implementation(libs.micronaut.gcp.common)
+    implementation(libs.micronaut.gcp.secret.manager)
+    implementation(libs.snakeyaml)
+    annotationProcessor(libs.micronaut.security.annotations)
+    compileOnly(libs.micronaut.http.client)
+    runtimeOnly(libs.logback.classic)
+    runtimeOnly(libs.jackson.module.kotlin)
+    testImplementation(libs.micronaut.http.client)
 }
 
 application {
