@@ -104,6 +104,7 @@ jib {
 }
 
 tasks.withType<Test> {
+    environment("MICRONAUT_GCP_CREDENTIALS_ENABLED", "false")
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed", "standardOut", "standardError")
