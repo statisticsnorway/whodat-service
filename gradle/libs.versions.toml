@@ -25,6 +25,7 @@ micronautTest = "4.8.1"
 micronautValidation = "4.10.0"
 snakeyaml = "2.4"
 
+
 [libraries]
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
@@ -47,6 +48,7 @@ micronaut-gcp-secret-manager = { module = "io.micronaut.gcp:micronaut-gcp-secret
 
 [plugins]
 allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
+cyclonedx = { id = "org.cyclonedx.bom", version.ref = "cyclonedx" }
 jib = { id = "com.google.cloud.tools.jib", version.ref = "jib" }
 jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

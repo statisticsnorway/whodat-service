@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.gradle.shadow)
     alias(libs.plugins.micronaut.aot)
     alias(libs.plugins.micronaut.openapi)
+    alias(libs.plugins.jib)
+    alias(libs.plugins.cyclonedx)
 }
 
 version = "0.1"
@@ -80,6 +82,35 @@ micronaut {
     }
 }
 
+tasks.cyclonedxBom {
+    setIncludeConfigs(listOf("runtimeClasspath"))
+    setProjectType("application")
+}
+
+jib {
+    from {
+        image = "gcr.io/distroless/java21-debian12@sha256:70e8a4991b6e37cb1eb8eac3b717ed0d68407d1150cf30235d50cd33b2c44f7e"
+        platforms {
+            platform {
+                architecture = "amd64"
+                os = "linux"
+            }
+            platform {
+                architecture = "arm64"
+                os = "linux"
+            }
+        }
+    }
+}
+
+tasks.withType<Test> {
+    environment("MICRONAUT_CONFIG_CLIENT_ENABLED", "false")
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed", "standardOut", "standardError")
+    }
+}
+
 tasks.withType<Jar> {
     manifest {
         attributes["Main-Class"] = "no.ssb.whodat.ApplicationKt"
@@ -102,4 +133,51 @@ tasks.register<JavaExec>("runLocal") {
 
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
     jdkVersion = "21"
+}
+
+val versionFile = file("build.gradle.kts")
+
+fun bumpVersion(type: String) {
+    val versionRegex = """version\s*=\s*"(\d+)\.(\d+)\.(\d+)"""".toRegex()
+    val content = versionFile.readText()
+
+    val updatedContent =
+        versionRegex.replace(content) { matchResult ->
+            val (major, minor, patch) = matchResult.destructured
+            val newVersion =
+                when (type) {
+                    "major" -> "${major.toInt() + 1}.0.0"
+                    "minor" -> "$major.${minor.toInt() + 1}.0"
+                    "patch" -> "$major.$minor.${patch.toInt() + 1}"
+                    else -> throw IllegalArgumentException("Invalid version type: $type")
+                }
+            """version = "$newVersion""""
+        }
+
+    versionFile.writeText(updatedContent)
+    println("Successfully updated version")
+}
+
+tasks.register("versionMajor") {
+    group = "versioning"
+    description = "Bump the major version"
+    doLast {
+        bumpVersion("major")
+    }
+}
+
+tasks.register("versionMinor") {
+    group = "versioning"
+    description = "Bump the minor version"
+    doLast {
+        bumpVersion("minor")
+    }
+}
+
+tasks.register("versionPatch") {
+    group = "versioning"
+    description = "Bump the patch version"
+    doLast {
+        bumpVersion("patch")
+    }
 }
