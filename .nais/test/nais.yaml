@@ -14,9 +14,6 @@ spec:
     - https://whodat-service.intern.test.ssb.no
 
   accessPolicy:
-    rules:
-        - application: "stable-id-lookup-service"
-          namespace: "reg-freg"
     outbound:
       external:
         - host: auth.test.ssb.no
