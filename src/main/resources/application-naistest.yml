@@ -1,6 +1,7 @@
 guardian:
   mp-client-id: ${MP_CLIENT_ID}
 keycloak:
+  gcp-client-project-id: ${GCP_KEYCLOAK_CLIENTS_PROJECT_ID}
   gcp-client-team-uniform-name: dapla-stat
   keycloak-url: auth.test.ssb.no
 
