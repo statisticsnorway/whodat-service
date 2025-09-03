@@ -1,0 +1,32 @@
+# This config essentially mirrors an application-test.yml config when deployed on NAIS
+guardian:
+  mp-client-id: ${MP_CLIENT_ID}
+keycloak:
+  gcp-client-project-id: ${GCP_KEYCLOAK_CLIENTS_PROJECT_ID}
+  gcp-client-team-uniform-name: dapla-stat
+  keycloak-url: auth.test.ssb.no
+
+micronaut:
+  http:
+    services:
+      keycloak:
+        url: https://auth.test.ssb.no/
+        read-timeout: 60s
+      maskinporten:
+        url: https://guardian.intern.test.ssb.no/
+        read-timeout: 60s
+      freg:
+        url: https://folkeregisteret-api-konsument.sits.no/
+        read-timeout: 60s
+
+  security:
+    token:
+      jwt:
+        signatures:
+          jwks:
+            keycloak-nais-test:
+              url: 'https://auth.test.ssb.no/realms/ssb/protocol/openid-connect/certs'
+            lab-id-north1-test:
+              url: 'https://labid.lab.dapla-test-external.ssb.no/jwks'
+            lab-id-north1-dev:
+              url: 'https://labid.lab.dapla-dev-external.ssb.no/jwks'

@@ -1,0 +1,48 @@
+apiVersion: "monitoring.coreos.com/v1"
+kind: PrometheusRule
+metadata:
+  name: alert-whodat-service
+  namespace: dapla-stat
+  labels:
+    team: dapla-stat
+spec:
+  groups:
+    - name: dapla-stat
+      rules:
+        - alert: High number of errors
+          expr: (100 * sum by (app, namespace) (rate(logback_events_total{app="whodat-service",level="error"}[3m])) / sum by (app, namespace) (rate(logback_events_total{app="whodat-service"}[3m]))) > 10
+          for: 3m
+          annotations:
+            title: "High number of errors logged"
+            consequence: "There can be different causes for errors, check logs for cause and evaluation of consequences."
+            action: "`kubectl describe pod -l app=whodat-service -n dapla-stat` -> `kubectl logs <podname>`"
+          labels:
+            service: whodat-service
+            namespace: dapla-stat
+            severity: critical
+            environment: test
+
+        - alert: whodat-service is unavailable
+          expr: rate(http_client_requests_seconds_count{app="whodat-service", status!="200"}[1m]) > 0
+          for: 1m
+          annotations:
+            title: "whodat-service is unavailable "
+            consequence: "The service may lack some functionality"
+            description: "Client {{ $labels.serviceId }} responded with {{ $labels.status }} causing {{ $labels.exception }}"
+          labels:
+            service: whodat-service
+            namespace: dapla-stat
+            severity: critical
+            environment: test
+
+        - alert: whodat-service is unavailable
+          expr: kube_deployment_status_replicas_available{deployment="whodat-service"} == 0
+          for: 1m
+          annotations:
+            title: "whodat-service is unavailable"
+            consequence: "Service is unavailable to users. "
+          labels:
+            service: whodat-service
+            namespace: dapla-stat
+            severity: critical
+            environment: test
