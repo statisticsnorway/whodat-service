@@ -25,7 +25,6 @@ import io.swagger.v3.oas.annotations.servers.Server
     type = SecuritySchemeType.HTTP,
     scheme = "bearer",
     bearerFormat = "jwt",
-    `in` = SecuritySchemeIn.HEADER,
     paramName = "Authorization"
 )
 object Api
