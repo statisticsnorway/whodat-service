@@ -5,3 +5,8 @@ micronaut:
     secret-manager:
       location: europe-north1
     project-id: keycloak-clients-t-ke
+    
+kubernetes:
+  client:
+    secrets:
+      enabled: true
