@@ -16,6 +16,7 @@ logback = "1.5.18"
 micronaut = "4.9.2"
 micronautGcp = "5.12.0"
 micronautGradle = "4.5.4"
+micronautManagement = "4.9.9"
 micronautMicrometer = "5.12.0"
 micronautKotlin = "4.7.0"
 micronautOpenapi = "6.17.3"
@@ -35,6 +36,7 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "lo
 micronaut-kotlin-runtime = { module = "io.micronaut.kotlin:micronaut-kotlin-runtime", version.ref = "micronautKotlin" }
 micronaut-http-client = { module = "io.micronaut:micronaut-http-client", version.ref = "micronaut" }
 micronaut-http-validation = { module = "io.micronaut:micronaut-http-validation", version.ref = "micronaut" }
+micronaut-management = { module = "io.micronaut:micronaut-management", version.ref = "micronautManagement" }
 micronaut-micrometer-registry-prometheus = { module = "io.micronaut.micrometer:micronaut-micrometer-registry-prometheus", version.ref = "micronautMicrometer" }
 micronaut-openapi = { module = "io.micronaut.openapi:micronaut-openapi", version.ref = "micronautOpenapi" }
 micronaut-openapi-annotations = { module = "io.micronaut.openapi:micronaut-openapi-annotations", version.ref = "micronautOpenapi" }

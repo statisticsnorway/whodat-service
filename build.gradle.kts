@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.micronaut.management)
     implementation(libs.micronaut.openapi.annotations)
     implementation(libs.micronaut.security.jwt)
     implementation(libs.micronaut.http.client)
