@@ -54,3 +54,17 @@ micronaut:
 
     basic-auth:
       enabled: false
+
+endpoints:
+  all:
+    port: 9191
+  environments:
+    enabled: true
+    sensitive: false
+  health:
+    sensitive: false
+    details-visible: ANONYMOUS
+    service-http-client:
+      enabled: true
+    monitor:
+      enabled: true
