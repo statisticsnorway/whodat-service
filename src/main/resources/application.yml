@@ -68,3 +68,6 @@ endpoints:
       enabled: true
     monitor:
       enabled: true
+
+logger:
+  config: logback.xml
