@@ -3,6 +3,8 @@ micronaut:
     name: whodat-service
   server:
     port: 9191
+    netty:
+      logLevel: TRACE
   router:
     static-resources:
       swagger:
