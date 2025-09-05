@@ -15,6 +15,7 @@ micronaut:
         url: https://guardian.intern.test.ssb.no/
         read-timeout: 60s
       freg:
+        log-level: INFO
         url: https://folkeregisteret-api-konsument.sits.no/
         read-timeout: 60s
 
