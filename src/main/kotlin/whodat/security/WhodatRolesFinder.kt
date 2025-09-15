@@ -26,9 +26,6 @@ data class StaticRolesConfig(
 
 @Singleton
 @Replaces(bean = DefaultRolesFinder::class)
-@Requirements(
-    Requires(notEnv = [Environment.TEST]),
-)
 @ExecuteOn(TaskExecutors.BLOCKING)
 class WhodatRolesFinder(
     private val tokenConfiguration: TokenConfiguration,
