@@ -14,8 +14,6 @@ ksp = "2.2.10-2.0.2"
 ktlint = "13.0.0"
 logback = "1.5.18"
 micronaut = "4.9.2"
-micronautAop = "4.9.11"
-micronautCache = "5.3.0"
 micronautGcp = "5.12.0"
 micronautGradle = "4.5.4"
 micronautManagement = "4.9.9"
@@ -27,7 +25,6 @@ micronautSerde = "2.15.1"
 micronautTest = "4.8.1"
 micronautValidation = "4.10.0"
 snakeyaml = "2.4"
-reactor = "3.7.9"
 
 
 [libraries]
@@ -35,7 +32,6 @@ jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
-kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor", version.ref = "kotlinxCoroutines" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 micronaut-kotlin-runtime = { module = "io.micronaut.kotlin:micronaut-kotlin-runtime", version.ref = "micronautKotlin" }
 micronaut-http-client = { module = "io.micronaut:micronaut-http-client", version.ref = "micronaut" }
@@ -51,10 +47,6 @@ micronaut-serde-processor = { module = "io.micronaut.serde:micronaut-serde-proce
 snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
 micronaut-gcp-common = { module = "io.micronaut.gcp:micronaut-gcp-common", version.ref = "micronautGcp" }
 micronaut-gcp-secret-manager = { module = "io.micronaut.gcp:micronaut-gcp-secret-manager", version.ref = "micronautGcp" }
-micronaut-cache-core = { module = "io.micronaut.cache:micronaut-cache-core", version.ref = "micronautCache" }
-micronaut-cache-caffeine = { module = "io.micronaut.cache:micronaut-cache-caffeine", version.ref = "micronautCache" }
-micronaut-aop = { module = "io.micronaut:micronaut-aop", version.ref = "micronautAop" }
-reactor = { module = "io.projectreactor:reactor-core", version.ref = "reactor" }
 
 [plugins]
 allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
