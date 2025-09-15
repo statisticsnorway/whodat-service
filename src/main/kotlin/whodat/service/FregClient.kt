@@ -1,6 +1,9 @@
 package no.ssb.whodat.service
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.mycompany.model.Folkeregisterettilgjengeliggjoeringhendelsev1bulkrequestHendelseBulkoppslagRequest
+import com.mycompany.model.Folkeregisterettilgjengeliggjoeringhendelsev1bulkresponseHendelseBulkoppslagResponse
+import com.mycompany.model.Folkeregisterettilgjengeliggjoeringpersonv1Folkeregisterperson
 import io.micronaut.http.HttpHeaders.ACCEPT
 import io.micronaut.http.HttpHeaders.CONTENT_TYPE
 import io.micronaut.http.HttpHeaders.USER_AGENT
@@ -53,4 +56,15 @@ interface FregClient {
         @Header authorization: String,
         @QueryValue request: FregClientRequest,
     ): FregClientResponse
+
+    @Get("/folkeregisteret/offentlig-med-hjemmel/api/v1/personer/{personidentifikator}")
+    @Headers(
+        Header(name = CONTENT_TYPE, value = "application/json"),
+        Header(name = ACCEPT, value = "application/json"),
+    )
+    @Consumes(TEXT_PLAIN)
+    fun findPersons(
+        @Header authorization: String,
+        @PathVariable("personidentifikator") @NotNull personidentifikator: String,
+    ): Folkeregisterettilgjengeliggjoeringpersonv1Folkeregisterperson
 }
