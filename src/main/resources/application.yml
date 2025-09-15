@@ -17,6 +17,7 @@ micronaut:
         io.micronaut.security: INFO
         io.micronaut.security.token.jwt.validator: DEBUG
     openapi:
+      enabled: true
       views:
         spec: |
           mapping.path=classpath:META-INF/swagger,
@@ -54,6 +55,10 @@ micronaut:
 
     basic-auth:
       enabled: false
+  caches:
+    cloud-identity-service-cache:
+      charset: 'UTF-8'
+      expire-after-write: 2m
 
 endpoints:
   all:
