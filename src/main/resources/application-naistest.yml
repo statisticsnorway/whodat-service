@@ -29,3 +29,11 @@ micronaut:
               url: 'https://labid.lab.dapla-test-external.ssb.no/jwks'
             lab-id-north1-dev:
               url: 'https://labid.lab.dapla-dev-external.ssb.no/jwks'
+
+app-roles:
+  trusted-issuers:
+    - 'https://labid.lab.dapla-dev-external.ssb.no'
+    - 'https://labid.lab.dapla-test-external.ssb.no'
+    - 'https://auth.test.ssb.no/realms/ssb/protocol/openid-connect/certs'
+  users:
+    - isAuthenticated()
