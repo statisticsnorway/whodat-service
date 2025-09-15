@@ -1,15 +1,14 @@
 package no.ssb.whodat.service
 
+import com.mycompany.model.Folkeregisterettilgjengeliggjoeringpersonv1Folkeregisterperson
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Post
-import io.micronaut.security.annotation.Secured
 import io.micronaut.serde.annotation.Serdeable
 import kotlinx.coroutines.*
 import no.ssb.whodat.gcp.GCPSecretManagerClient
 import org.slf4j.LoggerFactory
-import whodat.security.WhodatServiceRole
 import whodat.service.MaskinportenGuardianClient
 import java.util.Base64
 import kotlin.reflect.full.memberProperties
@@ -19,7 +18,6 @@ data class FindPersonsRequest(
     val foedselsEllerDNummer: String,
 )
 
-@Secured(WhodatServiceRole.USER)
 @Controller()
 private class FnrSearchController(
     private val maskinPortenGuardianClient: MaskinportenGuardianClient,
@@ -81,5 +79,20 @@ private class FnrSearchController(
             val results = fregClient.searchFnr("Bearer $maskinPortenToken", request)
 
             return@coroutineScope HttpResponse.ok(results)
+        }
+
+    @Post("/findpersons")
+    suspend fun findPersons(
+        @Body request: FindPersonsRequest,
+    ): HttpResponse<Folkeregisterettilgjengeliggjoeringpersonv1Folkeregisterperson> =
+        coroutineScope {
+            val maskinPortenToken = maskinPortenTokenKeyExchange()
+
+            return@coroutineScope HttpResponse.ok(
+                fregClient.findPersons(
+                    "Bearer $maskinPortenToken",
+                    request.foedselsEllerDNummer,
+                ),
+            )
         }
 }
