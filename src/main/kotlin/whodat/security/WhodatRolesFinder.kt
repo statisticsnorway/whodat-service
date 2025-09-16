@@ -75,5 +75,5 @@ class WhodatRolesFinder(
     }
 
     private fun isTrustedIssuer(attributes: Map<String, Any>): Boolean =
-        rolesConfig.trustedIssuers?.contains(attributes.get(JWTClaimNames.ISSUER).toString()) == true
+        rolesConfig.trustedIssuers?.contains(attributes[JWTClaimNames.ISSUER].toString()) == true
 }
