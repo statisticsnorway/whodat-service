@@ -8,6 +8,7 @@ import io.micronaut.context.annotation.Requires
 import io.micronaut.context.env.Environment
 import io.micronaut.scheduling.TaskExecutors
 import io.micronaut.scheduling.annotation.ExecuteOn
+import io.micronaut.security.rules.SecurityRule
 import io.micronaut.security.token.DefaultRolesFinder
 import io.micronaut.security.token.RolesFinder
 import io.micronaut.security.token.config.TokenConfiguration
@@ -22,6 +23,7 @@ import java.util.*
 data class StaticRolesConfig(
     val userGroupNames: List<String>? = null,
     val trustedIssuers: List<String>? = null,
+    val users: List<String>? = null
 )
 
 @Singleton
@@ -52,9 +54,13 @@ class WhodatRolesFinder(
                 return@runBlocking emptyList<String>()
             }
 
+            // We check for trustedIssuer when in environments where all authenticated requests are accepted
+            // This is due to Google tokens being valid for authorization purposes,
+            // however they get no roles since they are not a trusted issuer.
             rolesConfig.userGroupNames?.map { group ->
                 val userMembers: List<Membership> = cloudIdentityService.listMembers(group)
-                if (userMembers.any { it.preferredMemberKey?.id == email }) {
+                if (rolesConfig.users?.contains(SecurityRule.IS_AUTHENTICATED) ?: false && trustedIssuer ||
+                    userMembers.any { it.preferredMemberKey?.id == email }) {
                     roles.add(WhodatServiceRole.USER)
                 }
             }
