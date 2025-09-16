@@ -35,5 +35,7 @@ app-roles:
     - 'https://labid.lab.dapla-dev-external.ssb.no'
     - 'https://labid.lab.dapla-test-external.ssb.no'
     - 'https://auth.test.ssb.no/realms/ssb/protocol/openid-connect/certs'
+  user-group-names:
+    - 'whodat-service-user-t@ssb.no'
   users:
     - isAuthenticated()
