@@ -1,8 +1,5 @@
 package no.ssb.whodat.service
 
-import io.micronaut.cache.CacheManager
-import io.micronaut.cache.SyncCache
-import io.micronaut.cache.annotation.Cacheable
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
@@ -31,21 +28,6 @@ data class WhodatVariables(
     val postnummer: String? = null,
     val kommunenummer: String? = null,
     val fylkesnummer: String? = null,
-)
-
-@Serdeable
-data class WhodatModifiers(
-    val inkluderOppholdsadresse: Boolean? = null,
-    val soekFonetisk: Boolean? = null,
-    val inkluderDoede: Boolean? = null,
-    val opplysningsgrunnlag: String? = null,
-    val maksTreff: Int? = null,
-)
-
-@Serdeable
-data class SearchRequest(
-    val whodatVariables: List<WhodatVariables>,
-    val whodatModifiers: WhodatModifiers,
 )
 
 @Secured(WhodatServiceRole.USER)
@@ -105,18 +87,8 @@ open class FnrSearchController(
             log.info("Received request with ${request.whodatVariables.size} number of rows")
             val requestSemaphore = Semaphore(1000)
 
-            val futures =
-                request.whodatVariables.map {
-                    async {
-                        requestSemaphore.withPermit {
-                            val maskinPortenToken = maskinPortenTokenKeyExchange()
-                            fregClient.searchFnr(
-                                "Bearer $maskinPortenToken",
-                                FregClientRequest.from(it, request.whodatModifiers),
-                            )
-                        }
-                    }
-                }
-            return@coroutineScope HttpResponse.ok(futures.awaitAll())
+            val results = fregClient.searchFnr("Bearer $maskinPortenToken", request)
+
+            return@coroutineScope HttpResponse.ok(results)
         }
 }

@@ -38,18 +38,6 @@ micronaut:
               url: 'https://labid.lab.dapla-test-external.ssb.no/jwks'
             lab-id-north1-dev:
               url: 'https://labid.lab.dapla-dev-external.ssb.no/jwks'
-            google:
-              url: 'https://www.googleapis.com/oauth2/v3/certs'
-
-gcp:
-  http:
-    client:
-      filter:
-        project-id: ${DAPLA_STAT_PROJECT_ID}
-        services:
-          cloud-identity-service:
-            scopes:
-              - "https://www.googleapis.com/auth/cloud-identity.groups.readonly"
 
 app-roles:
   trusted-issuers:
@@ -57,5 +45,6 @@ app-roles:
     - 'https://labid.lab.dapla-test-external.ssb.no'
     - 'https://auth.test.ssb.no/realms/ssb/protocol/openid-connect/certs'
   user-group-names:
-    - 'whodat-service-m2m-t@ssb.no'
     - 'whodat-service-user-t@ssb.no'
+  users:
+    - isAuthenticated()
