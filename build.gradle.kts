@@ -29,22 +29,17 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.reactor)
-    implementation(libs.micronaut.cache.core)
-    implementation(libs.micronaut.aop)
     implementation(libs.micronaut.management)
     implementation(libs.micronaut.openapi.annotations)
     implementation(libs.micronaut.security.jwt)
     implementation(libs.micronaut.http.client)
     implementation(libs.micronaut.gcp.common)
     implementation(libs.micronaut.gcp.secret.manager)
-    implementation(libs.reactor)
     implementation(libs.snakeyaml)
     annotationProcessor(libs.micronaut.security.annotations)
     compileOnly(libs.micronaut.http.client)
     runtimeOnly(libs.logback.classic)
     runtimeOnly(libs.jackson.module.kotlin)
-    runtimeOnly(libs.micronaut.cache.caffeine)
     testImplementation(libs.micronaut.http.client)
 }
 
@@ -75,6 +70,16 @@ micronaut {
         deduceEnvironment = true
         optimizeNetty = true
         replaceLogbackXml = true
+    }
+    openapi {
+        client(file("src/main/resources/freg-openapi.yaml")) {
+            apiPackageName.set("com.mycompany.api")
+            modelPackageName.set("com.mycompany.model")
+            useOptional.set(true)
+            clientId.set("some-client-id")
+            // Supports Kotlin codegen too
+            lang.set("kotlin")
+        }
     }
 }
 
