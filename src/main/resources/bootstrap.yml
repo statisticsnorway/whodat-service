@@ -1,11 +1,7 @@
 micronaut:
   config-client:
     enabled: true
-  gcp:
-    secret-manager:
-      location: europe-north1
-    project-id: keycloak-clients-t-ke
-    
+
 kubernetes:
   client:
     secrets:

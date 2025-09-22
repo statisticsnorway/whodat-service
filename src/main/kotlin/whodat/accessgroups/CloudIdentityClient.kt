@@ -1,11 +1,12 @@
 package whodat.accessgroups
 
 import io.micronaut.core.annotation.Introspected
+import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.Header
 import io.micronaut.http.annotation.QueryValue
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.serde.annotation.Serdeable
-import io.micronaut.serde.annotation.Serdeable.Deserializable
 import whodat.filters.AccessTokenFilterMatcher
 
 @Client(id = "cloud-identity-service")
@@ -17,7 +18,11 @@ interface CloudIdentityClient {
      * @param groupKeyId the email address of the group
      */
     @Get("/groups:lookup?groupKey.id={groupKeyId}")
-    suspend fun lookup(groupKeyId: String): LookupResponse
+    suspend fun lookup(
+        @Header("Authorization") authorization: String,
+        @Header("x-goog-user-project") googleProject: String,
+        groupKeyId: String): HttpResponse<LookupResponse>
+
 
     /**
      * List all members of a group.
@@ -28,17 +33,19 @@ interface CloudIdentityClient {
      */
     @Get("/groups/{groupId}/memberships")
     suspend fun listMembers(
+        @Header("Authorization") authorization: String,
+        @Header("x-goog-user-project") googleProject: String,
         groupId: String,
         @QueryValue pageToken: String? = null,
     ): MembershipResponse
 }
 
 @Introspected
-@Deserializable
-class MembershipResponse {
-    val memberships: MutableList<Membership>? = null
+@Serdeable.Deserializable
+data class MembershipResponse(
+    val memberships: List<Membership> = listOf(),
     val nextPageToken: String? = null
-}
+)
 
 @Introspected
 @Serdeable.Deserializable
@@ -63,7 +70,7 @@ data class Membership(
 )
 
 @Introspected
-@Deserializable
+@Serdeable.Deserializable
 data class EntityKey(
     val id: String?,
     val namespace: String?,
