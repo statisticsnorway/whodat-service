@@ -2,7 +2,7 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: whodat-service
+  name: whodat-service-develop
   namespace: {{team}}
   labels:
     team: {{team}}
@@ -61,4 +61,4 @@ spec:
     initialDelay: 45 # seconds
   startup:
     path: /health/liveness
-    port: 11100
+    port: 9191

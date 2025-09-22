@@ -14,7 +14,7 @@ micronaut:
       read-timeout: 20s
     services:
       cloud-identity-service:
-        url: https://cloudidentity.googleapis.com
+        url: 'https://cloudidentity.googleapis.com'
         path: '/v1'
         read-timeout: 60s
       keycloak:
@@ -26,6 +26,19 @@ micronaut:
       freg:
         url: https://folkeregisteret-api-konsument.sits.no/
         read-timeout: 60s
+
+  caches:
+    cloud-identity-service-cache:
+      expire-after-write: 30s
+
+  gcp:
+    http:
+      client:
+        filter:
+          project-id: 'dapla-stat-t-53'
+          services:
+            cloud-identity-service:
+              audience: "https://www.googleapis.com/auth/cloud-identity.groups.readonly"
 
   security:
     token:

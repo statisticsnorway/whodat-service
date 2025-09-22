@@ -59,8 +59,13 @@ class WhodatRolesFinder(
             // however they get no roles since they are not a trusted issuer.
             rolesConfig.userGroupNames?.map { group ->
                 val userMembers: List<Membership> = cloudIdentityService.listMembers(group)
-                if (rolesConfig.users?.contains(SecurityRule.IS_AUTHENTICATED) ?: false && trustedIssuer ||
+                println("DEBUG USERMEMBERS:")
+                println(userMembers)
+                println(email)
+                println(userMembers.any { it.preferredMemberKey?.id == email })
+                if ((rolesConfig.users?.contains(SecurityRule.IS_AUTHENTICATED) ?: false && trustedIssuer) ||
                     userMembers.any { it.preferredMemberKey?.id == email }) {
+                    println("ROLE IS ADDED")
                     roles.add(WhodatServiceRole.USER)
                 }
             }
