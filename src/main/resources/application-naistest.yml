@@ -9,7 +9,7 @@ micronaut:
   http:
     services:
       cloud-identity-service:
-        url: 'https://cloudidentity.googleapis.com'
+        url: https://cloudidentity.googleapis.com
         path: '/v1'
         read-timeout: 60s
       keycloak:

@@ -9,7 +9,7 @@
     </appender>
 
     <logger name="io.netty.handler.logging" level="TRACE" />
-    <logger name="io.micronaut.http.client" level="TRACE"/>
+    <!--<logger name="io.micronaut.http.client" level="TRACE"/>-->
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />
