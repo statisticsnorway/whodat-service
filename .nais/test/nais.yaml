@@ -11,7 +11,7 @@ spec:
   port: 9191
 
   ingresses:
-    - https://whodat-service.intern.test.ssb.no
+    - https://whodat-service-develop.intern.test.ssb.no
 
   accessPolicy:
     outbound:
