@@ -50,20 +50,23 @@ class WhodatRolesFinder(
                 return@runBlocking emptyList()
             }
 
-            rolesConfig.userGroupNames?.map { group ->
+            val activeEnvironments = applicationContext.environment.activeNames
+
+            rolesConfig.userGroupNames?.forEach { group ->
                 val groupMembers = cloudIdentityService.listMembers(group)
-                val activeEnvironments = applicationContext.environment.activeNames
                 val userIsGroupMember = groupMembers.any { it.preferredMemberKey?.id == email}
                 when {
-                    group == "whodat-service-m2m@ssb.no" && userIsGroupMember  ->
+                    group == "whodat-service-m2m-p@ssb.no" && userIsGroupMember  ->
                         roles.add(WhodatServiceRole.USER)
                     activeEnvironments.contains("naisprod") && trustedIssuer && userIsGroupMember  ->
                         roles.add(WhodatServiceRole.USER)
                     activeEnvironments.contains("naistest") && (trustedIssuer || userIsGroupMember) ->
                         roles.add(WhodatServiceRole.USER)
-                    activeEnvironments.contains("local") ->
-                        roles.add(WhodatServiceRole.USER)
                 }
+            }
+
+            if (activeEnvironments.contains("local")) {
+                roles.add(WhodatServiceRole.USER)
             }
 
             if (roles.isEmpty()) {
