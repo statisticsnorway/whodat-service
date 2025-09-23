@@ -1,9 +1,7 @@
 package whodat.accessgroups
 
 import io.micronaut.core.annotation.Introspected
-import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Get
-import io.micronaut.http.annotation.Header
 import io.micronaut.http.annotation.QueryValue
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.serde.annotation.Serdeable
@@ -18,10 +16,7 @@ interface CloudIdentityClient {
      * @param groupKeyId the email address of the group
      */
     @Get("/groups:lookup?groupKey.id={groupKeyId}")
-    suspend fun lookup(
-        @Header("Authorization") authorization: String,
-        @Header("x-goog-user-project") googleProject: String,
-        groupKeyId: String): HttpResponse<LookupResponse>
+    suspend fun lookup(groupKeyId: String): LookupResponse
 
 
     /**
@@ -33,8 +28,6 @@ interface CloudIdentityClient {
      */
     @Get("/groups/{groupId}/memberships")
     suspend fun listMembers(
-        @Header("Authorization") authorization: String,
-        @Header("x-goog-user-project") googleProject: String,
         groupId: String,
         @QueryValue pageToken: String? = null,
     ): MembershipResponse
