@@ -13,8 +13,9 @@
         <discardingThreshold>0</discardingThreshold>
     </appender>
 
-    <logger name="io.netty.handler.logging" level="TRACE" />
-    <logger name="io.micronaut.http.client" level="TRACE"/>
+    <logger name="io.netty.handler.logging" level="TRACE"/>
+    <!--<logger name="io.micronaut.http.client" level="TRACE"/>-->
+    <logger name="whodat.security" level="DEBUG"/>
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />

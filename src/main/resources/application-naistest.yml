@@ -14,7 +14,7 @@ micronaut:
       read-timeout: 20s
     services:
       cloud-identity-service:
-        url: 'https://cloudidentity.googleapis.com'
+        url: https://cloudidentity.googleapis.com
         path: '/v1'
         read-timeout: 60s
       keycloak:
@@ -58,6 +58,5 @@ app-roles:
     - 'https://labid.lab.dapla-test-external.ssb.no'
     - 'https://auth.test.ssb.no/realms/ssb/protocol/openid-connect/certs'
   user-group-names:
-    - 'whodat-service-user-t@ssb.no'
-  users:
-    - isAuthenticated()
+    - 'whodat-service-m2m-t@ssb.no'
+    - 'whodat-service-user@ssb.no'
