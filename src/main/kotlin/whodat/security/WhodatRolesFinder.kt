@@ -1,14 +1,11 @@
 package whodat.security
 
 import com.nimbusds.jwt.JWTClaimNames
+import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.ConfigurationProperties
 import io.micronaut.context.annotation.Replaces
-import io.micronaut.context.annotation.Requirements
-import io.micronaut.context.annotation.Requires
-import io.micronaut.context.env.Environment
 import io.micronaut.scheduling.TaskExecutors
 import io.micronaut.scheduling.annotation.ExecuteOn
-import io.micronaut.security.rules.SecurityRule
 import io.micronaut.security.token.DefaultRolesFinder
 import io.micronaut.security.token.RolesFinder
 import io.micronaut.security.token.config.TokenConfiguration
@@ -17,13 +14,11 @@ import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import whodat.accessgroups.CloudIdentityService
 import whodat.accessgroups.Membership
-import java.util.*
 
 @ConfigurationProperties("app-roles")
 data class StaticRolesConfig(
     val userGroupNames: List<String>? = null,
     val trustedIssuers: List<String>? = null,
-    val users: List<String>? = null
 )
 
 @Singleton
@@ -33,6 +28,7 @@ class WhodatRolesFinder(
     private val tokenConfiguration: TokenConfiguration,
     private val rolesConfig: StaticRolesConfig,
     private val cloudIdentityService: CloudIdentityService,
+    private val applicationContext: ApplicationContext
 ) : RolesFinder {
     private val log = LoggerFactory.getLogger(WhodatRolesFinder::class.java)
 
@@ -51,17 +47,22 @@ class WhodatRolesFinder(
                 }
 
             if (email == null) {
-                return@runBlocking emptyList<String>()
+                return@runBlocking emptyList()
             }
 
-            // We check for trustedIssuer when in environments where all authenticated requests are accepted
-            // This is due to Google tokens being valid for authorization purposes,
-            // however they get no roles since they are not a trusted issuer.
             rolesConfig.userGroupNames?.map { group ->
-                val userMembers: List<Membership> = cloudIdentityService.listMembers(group)
-                if ((rolesConfig.users?.contains(SecurityRule.IS_AUTHENTICATED) ?: false && trustedIssuer) ||
-                    userMembers.any { it.preferredMemberKey?.id == email }) {
-                    roles.add(WhodatServiceRole.USER)
+                val groupMembers = cloudIdentityService.listMembers(group)
+                val activeEnvironments = applicationContext.environment.activeNames
+                val userIsGroupMember = groupMembers.any { it.preferredMemberKey?.id == email}
+                when {
+                    group == "whodat-service-m2m@ssb.no" && userIsGroupMember  ->
+                        roles.add(WhodatServiceRole.USER)
+                    activeEnvironments.contains("naisprod") && trustedIssuer && userIsGroupMember  ->
+                        roles.add(WhodatServiceRole.USER)
+                    activeEnvironments.contains("naistest") && (trustedIssuer || userIsGroupMember) ->
+                        roles.add(WhodatServiceRole.USER)
+                    activeEnvironments.contains("local") ->
+                        roles.add(WhodatServiceRole.USER)
                 }
             }
 
