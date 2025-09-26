@@ -57,8 +57,9 @@ class AccessTokenFilter(
             } else {
                 credsWithQuota
             }
-
+        log.info("Scoped token: ${scoped.accessToken.tokenValue}")
         val token = scoped.refreshAccessToken().tokenValue
+        log.info("refreshed token: $token")
         request.bearerAuth(token)
         setQuotaProject(request)
         return chain.proceed(request)
