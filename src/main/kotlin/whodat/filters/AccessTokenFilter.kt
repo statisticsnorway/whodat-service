@@ -36,6 +36,12 @@ class AccessTokenFilter(
             log.info("Using Credentials from Service Account file: $credentialsPath")
             GoogleCredentials.fromStream(FileInputStream(credentialsPath))
         }
+    private val credsWithQuota: GoogleCredentials =
+        if (!projectId.isNullOrBlank()) {
+            baseCredentials.createWithQuotaProject(projectId)
+        } else {
+            baseCredentials
+        }
 
     override fun doFilter(
         request: MutableHttpRequest<*>,
@@ -44,10 +50,10 @@ class AccessTokenFilter(
         val cfg = getConfig(request)
 
         val scoped =
-            if (baseCredentials.createScopedRequired()) {
-                baseCredentials.createScoped(cfg?.scopes ?: defaultScopesFor(request))
+            if (credsWithQuota.createScopedRequired()) {
+                credsWithQuota.createScoped(cfg?.scopes ?: defaultScopesFor(request))
             } else {
-                baseCredentials
+                credsWithQuota
             }
 
         val token = scoped.refreshAccessToken().tokenValue
