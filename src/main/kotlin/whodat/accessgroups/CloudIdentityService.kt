@@ -11,7 +11,7 @@ open class CloudIdentityService(
     private val cloudIdentityClient: CloudIdentityClient,
     private val gcloudConfig: GoogleCloudConfiguration,
 ) {
-    private val log = LoggerFactory.getLogger(AccessTokenFilter::class.java)
+    private val log = LoggerFactory.getLogger(CloudIdentityService::class.java)
 
     @Cacheable(value = ["cloud-identity-service-cache"], parameters = ["groupEmail"])
     open suspend fun listMembers(groupEmail: String): List<Membership> {
