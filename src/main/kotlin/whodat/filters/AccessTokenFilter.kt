@@ -49,6 +49,8 @@ class AccessTokenFilter(
     ): Publisher<out HttpResponse<*>> {
         val cfg = getConfig(request)
 
+        log.info("Using quota project: ${credsWithQuota.quotaProjectId}")
+
         val scoped =
             if (credsWithQuota.createScopedRequired()) {
                 credsWithQuota.createScoped(cfg?.scopes ?: defaultScopesFor(request))
