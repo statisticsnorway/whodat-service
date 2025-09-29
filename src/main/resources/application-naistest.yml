@@ -31,16 +31,6 @@ micronaut:
     cloud-identity-service-cache:
       expire-after-write: 30s
 
-  gcp:
-    http:
-      client:
-        filter:
-          project-id: 'dapla-stat-t-53'
-          services:
-            cloud-identity-service:
-              scopes:
-              - "https://www.googleapis.com/auth/cloud-identity.groups.readonly"
-
   security:
     token:
       jwt:
@@ -54,6 +44,16 @@ micronaut:
               url: 'https://labid.lab.dapla-dev-external.ssb.no/jwks'
             google:
               url: 'https://www.googleapis.com/oauth2/v3/certs'
+
+gcp:
+  http:
+    client:
+      filter:
+        project-id: 'dapla-stat-t-53'
+        services:
+          cloud-identity-service:
+            scopes:
+              - "https://www.googleapis.com/auth/cloud-identity.groups.readonly"
 
 app-roles:
   trusted-issuers:
