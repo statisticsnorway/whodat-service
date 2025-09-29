@@ -52,11 +52,14 @@ class AccessTokenFilter(
         log.info("Using quota project: ${credsWithQuota.quotaProjectId}")
 
         val scoped = credsWithQuota.createScoped(cfg?.scopes ?: defaultScopesFor(request))
-        log.info("Scoped token: ${scoped.accessToken.tokenValue}")
-        log.info("Quota project: ${scoped.quotaProjectId}")
-        log.info("Scopes: ${scoped.accessToken.scopes}")
 
-        val token = scoped.refreshAccessToken().tokenValue
+        val refreshedToken = scoped.refreshAccessToken()
+
+        log.info("Scoped token: ${refreshedToken.tokenValue}")
+        log.info("Scopes: ${refreshedToken.scopes}")
+
+        val token = refreshedToken.tokenValue
+
         log.info("refreshed token: $token")
         request.bearerAuth(token)
         setQuotaProject(request)
