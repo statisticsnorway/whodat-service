@@ -13,6 +13,10 @@ micronaut:
         mapping: /swagger-ui/**
     logger:
       levels:
+        io.micronaut.http.client: DEBUG
+        io.micronaut.http.client.netty: DEBUG
+        whodat.http.ClientErrorLoggerFilter: DEBUG
+
         no.ssb.whodat.service: INFO
         io.micronaut.security: INFO
         io.micronaut.security.token.jwt.validator: DEBUG

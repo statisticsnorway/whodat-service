@@ -33,7 +33,8 @@ micronaut:
           project-id: 'dapla-stat-t-53'
           services:
             cloud-identity-service:
-              audience: "https://www.googleapis.com/auth/cloud-identity.groups.readonly"
+              scopes:
+              - "https://www.googleapis.com/auth/cloud-identity.groups.readonly"
 
   security:
     token:

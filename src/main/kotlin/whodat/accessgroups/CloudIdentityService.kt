@@ -3,19 +3,31 @@ package whodat.accessgroups
 import io.micronaut.cache.annotation.Cacheable
 import io.micronaut.gcp.GoogleCloudConfiguration
 import jakarta.inject.Singleton
+import no.ssb.whodat.filters.AccessTokenFilter
+import org.slf4j.LoggerFactory
 
 @Singleton
 open class CloudIdentityService(
     private val cloudIdentityClient: CloudIdentityClient,
-    private val gcloudConfig: GoogleCloudConfiguration
+    private val gcloudConfig: GoogleCloudConfiguration,
 ) {
+    private val log = LoggerFactory.getLogger(CloudIdentityService::class.java)
+
     @Cacheable(value = ["cloud-identity-service-cache"], parameters = ["groupEmail"])
     open suspend fun listMembers(groupEmail: String): List<Membership> {
-        val lookup = cloudIdentityClient.lookup(
-            groupEmail
-        )
-        val groupId = lookup.groupName
-        return fetchMemberships(groupId)
+        try {
+            val lookup =
+                cloudIdentityClient.lookup(
+                    groupEmail,
+                )
+
+            val groupId = lookup.groupName
+            return fetchMemberships(groupId)
+        } catch (e: io.micronaut.http.client.exceptions.HttpClientResponseException) {
+            val body = e.response.getBody(String::class.java).orElse("<no body>")
+            log.error("Cloud Identity call failed: status=${e.status} body=$body", e)
+            throw e
+        }
     }
 
     /**
@@ -30,13 +42,20 @@ open class CloudIdentityService(
 
         var pageToken: String? = null
         do {
-            val resp: MembershipResponse = cloudIdentityClient.listMembers(
-                groupId,
-                pageToken
-            )
-            // memberships is guaranteed non-null
-            allMemberships.addAll(resp.memberships)
-            pageToken = resp.nextPageToken
+            try {
+                val resp: MembershipResponse =
+                    cloudIdentityClient.listMembers(
+                        groupId,
+                        pageToken,
+                    )
+                // memberships is guaranteed non-null
+                allMemberships.addAll(resp.memberships)
+                pageToken = resp.nextPageToken
+            } catch (e: io.micronaut.http.client.exceptions.HttpClientResponseException) {
+                val body = e.response.getBody(String::class.java).orElse("<no body>")
+                log.error("Cloud Identity call failed: status=${e.status} body=$body", e)
+                throw e
+            }
         } while (pageToken != null)
 
         return allMemberships
