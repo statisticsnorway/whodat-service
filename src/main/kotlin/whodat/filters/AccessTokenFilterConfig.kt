@@ -16,16 +16,15 @@ import io.micronaut.serde.annotation.Serdeable
  */
 @Serdeable
 @EachProperty(AccessTokenFilterConfig.PREFIX)
-data class AccessTokenFilterConfig(
-    @param:Parameter val serviceId: String,
+data class AccessTokenFilterConfig (
+    @param:Parameter val serviceId: String
 ) {
     companion object {
-        const val PREFIX = "gcp.http.client.filter.services"
+        const val PREFIX: String = "gcp.http.client.filter.services"
     }
 
-    // Replace audience with scopes
-    var scopes: List<String> =
-        listOf(
-            "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
-        )
+    /**
+     * @param audience set the desired audience
+     */
+    var audience: String? = null
 }
