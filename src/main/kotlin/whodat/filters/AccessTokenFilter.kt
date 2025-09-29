@@ -36,12 +36,6 @@ class AccessTokenFilter(
             log.info("Using Credentials from Service Account file: $credentialsPath")
             GoogleCredentials.fromStream(FileInputStream(credentialsPath))
         }
-    private val credsWithQuota: GoogleCredentials =
-        if (!projectId.isNullOrBlank()) {
-            baseCredentials.createWithQuotaProject(projectId)
-        } else {
-            baseCredentials
-        }
 
     override fun doFilter(
         request: MutableHttpRequest<*>,
@@ -49,18 +43,10 @@ class AccessTokenFilter(
     ): Publisher<out HttpResponse<*>> {
         val cfg = getConfig(request)
 
-        log.info("Using quota project: ${credsWithQuota.quotaProjectId}")
+        val scopedToken = baseCredentials.createScoped(cfg?.scopes ?: emptyList<String>())
 
-        val scoped = credsWithQuota.createScoped(cfg?.scopes ?: defaultScopesFor(request))
+        val token = scopedToken.refreshAccessToken().tokenValue
 
-        val refreshedToken = scoped.refreshAccessToken()
-
-        log.info("Scoped token: ${refreshedToken.tokenValue}")
-        log.info("Scopes: ${refreshedToken.scopes}")
-
-        val token = refreshedToken.tokenValue
-
-        log.info("refreshed token: $token")
         request.bearerAuth(token)
         setQuotaProject(request)
         return chain.proceed(request)
@@ -79,12 +65,9 @@ class AccessTokenFilter(
         }
     }
 
-    private fun defaultScopesFor(request: MutableHttpRequest<*>): List<String> =
-        listOf("https://www.googleapis.com/auth/cloud-identity.groups.readonly")
-
     private fun setQuotaProject(request: MutableHttpRequest<*>) {
         if (projectId != null) {
-            log.info("Using projectId $projectId from config to override quotaProjectId")
+            log.debug("Using projectId $projectId from config to override quotaProjectId")
             request.headers.add("x-goog-user-project", projectId)
         }
     }

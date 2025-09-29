@@ -15,19 +15,13 @@ open class CloudIdentityService(
 
     @Cacheable(value = ["cloud-identity-service-cache"], parameters = ["groupEmail"])
     open suspend fun listMembers(groupEmail: String): List<Membership> {
-        try {
-            val lookup =
-                cloudIdentityClient.lookup(
-                    groupEmail,
-                )
+        val lookup =
+            cloudIdentityClient.lookup(
+                groupEmail,
+            )
 
-            val groupId = lookup.groupName
-            return fetchMemberships(groupId)
-        } catch (e: io.micronaut.http.client.exceptions.HttpClientResponseException) {
-            val body = e.response.getBody(String::class.java).orElse("<no body>")
-            log.error("Cloud Identity call failed: status=${e.status} body=$body", e)
-            throw e
-        }
+        val groupId = lookup.groupName
+        return fetchMemberships(groupId)
     }
 
     /**
@@ -42,20 +36,14 @@ open class CloudIdentityService(
 
         var pageToken: String? = null
         do {
-            try {
-                val resp: MembershipResponse =
-                    cloudIdentityClient.listMembers(
-                        groupId,
-                        pageToken,
-                    )
-                // memberships is guaranteed non-null
-                allMemberships.addAll(resp.memberships)
-                pageToken = resp.nextPageToken
-            } catch (e: io.micronaut.http.client.exceptions.HttpClientResponseException) {
-                val body = e.response.getBody(String::class.java).orElse("<no body>")
-                log.error("Cloud Identity call failed: status=${e.status} body=$body", e)
-                throw e
-            }
+            val resp: MembershipResponse =
+                cloudIdentityClient.listMembers(
+                    groupId,
+                    pageToken,
+                )
+            // memberships is guaranteed non-null
+            allMemberships.addAll(resp.memberships)
+            pageToken = resp.nextPageToken
         } while (pageToken != null)
 
         return allMemberships
