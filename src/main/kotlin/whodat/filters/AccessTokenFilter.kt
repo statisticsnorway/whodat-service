@@ -83,6 +83,7 @@ class AccessTokenFilter(
         listOf("https://www.googleapis.com/auth/cloud-identity.groups.readonly")
 
     private fun setQuotaProject(request: MutableHttpRequest<*>) {
+        log.info("Project ID $projectId")
         projectId?.let {
             // Either header…
             request.headers.add("x-goog-user-project", it)
