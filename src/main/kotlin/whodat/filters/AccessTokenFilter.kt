@@ -24,7 +24,7 @@ import kotlin.jvm.optionals.getOrNull
 @Singleton
 class AccessTokenFilter(
     @Value($$"${gcp.http.client.filter.credentials-path}") credentialsPath: String?,
-    @param:Value($$"${gcp.http.client.filter.project-id}") private val projectId: String?,
+    @param:Value($$"${gcp.http.client.filter.project-id}") private val projectId: String,
     private val applicationContext: ApplicationContext,
 ) : HttpClientFilter {
     private val log = LoggerFactory.getLogger(AccessTokenFilter::class.java)
@@ -83,9 +83,7 @@ class AccessTokenFilter(
         listOf("https://www.googleapis.com/auth/cloud-identity.groups.readonly")
 
     private fun setQuotaProject(request: MutableHttpRequest<*>) {
-        if (projectId != null) {
-            log.info("Using projectId $projectId from config to override quotaProjectId")
-            request.headers.add("x-goog-user-project", projectId)
-        }
+        log.info("Using projectId $projectId from config to override quotaProjectId")
+        request.headers.add("x-goog-user-project", projectId)
     }
 }
