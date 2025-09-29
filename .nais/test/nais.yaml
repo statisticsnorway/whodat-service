@@ -2,7 +2,7 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: whodat-service-develop
+  name: whodat-service
   namespace: {{team}}
   labels:
     team: {{team}}
@@ -11,7 +11,7 @@ spec:
   port: 9191
 
   ingresses:
-    - https://whodat-service-develop.intern.test.ssb.no
+    - https://whodat-service.intern.test.ssb.no
 
   accessPolicy:
     outbound:
