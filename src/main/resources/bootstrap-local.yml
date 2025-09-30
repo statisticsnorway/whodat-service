@@ -1,0 +1,8 @@
+micronaut:
+  gcp:
+    secret-manager:
+      location: europe-north1
+    project-id: keycloak-clients-t-ke
+
+gcp:
+  project-id: 'dapla-stat-t-53'
