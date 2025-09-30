@@ -1,0 +1,57 @@
+guardian:
+  mp-client-id: ${MP_CLIENT_ID}
+keycloak:
+  gcp-client-project-id: ${GCP_KEYCLOAK_CLIENTS_PROJECT_ID}
+  gcp-client-team-uniform-name: dapla-stat
+  keycloak-url: auth.ssb.no
+
+micronaut:
+  http:
+    services:
+      cloud-identity-service:
+        url: https://cloudidentity.googleapis.com
+        path: '/v1'
+        read-timeout: 60s
+      keycloak:
+        url: https://auth.ssb.no/
+        read-timeout: 60s
+      maskinporten:
+        url: https://guardian.intern.ssb.no/
+        read-timeout: 60s
+      freg:
+        url: https://folkeregisteret.api.skatteetaten.no/
+        read-timeout: 60s
+
+  caches:
+    cloud-identity-service-cache:
+      expire-after-write: 30s
+
+  security:
+    token:
+      jwt:
+        signatures:
+          jwks:
+            keycloak-nais-prod:
+              url: 'https://auth.ssb.no/realms/ssb/protocol/openid-connect/certs'
+            lab-id-north1-prod:
+              url: 'https://labid.lab.dapla-external.ssb.no/jwks'
+            google:
+              url: 'https://www.googleapis.com/oauth2/v3/certs'
+
+gcp:
+  http:
+    client:
+      filter:
+        project-id: ${DAPLA_STAT_PROJECT_ID}
+        services:
+          cloud-identity-service:
+            scopes:
+              - "https://www.googleapis.com/auth/cloud-identity.groups.readonly"
+
+app-roles:
+  trusted-issuers:
+    - 'https://labid.lab.dapla-external.ssb.no'
+    - 'https://auth.ssb.no/realms/ssb/protocol/openid-connect/certs'
+  user-group-names:
+    - 'whodat-service-m2m-p@ssb.no'
+    - 'whodat-service-user@ssb.no'
