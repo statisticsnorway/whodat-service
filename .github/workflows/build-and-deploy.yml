@@ -6,6 +6,10 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "'prod' or 'test'"
 
 env:
   REGISTRY: europe-north1-docker.pkg.dev/${{ secrets.NAIS_MANAGEMENT_PROJECT_ID }}/dapla-stat
@@ -30,7 +34,7 @@ jobs:
       - name: Set nais environment variables
         id: nais-deploy-vars
         run: |
-          if [[ ${{ github.event_name }} == "release" ]]; then
+          if [[ ${{ github.event_name }} == "release" || ${{inputs.environment}} == "prod" ]]; then
             echo "nais_cluster=prod" >> "$GITHUB_OUTPUT"
             echo "nais_config_path=.nais/prod/nais.yaml" >> "$GITHUB_OUTPUT"
           else
