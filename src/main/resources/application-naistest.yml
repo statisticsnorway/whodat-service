@@ -57,4 +57,4 @@ app-roles:
     - 'https://auth.test.ssb.no/realms/ssb/protocol/openid-connect/certs'
   user-group-names:
     - 'whodat-service-m2m-t@ssb.no'
-    - 'whodat-service-user@ssb.no'
+    - 'whodat-service-user-t@ssb.no'
