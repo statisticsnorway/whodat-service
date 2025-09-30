@@ -35,8 +35,8 @@ jobs:
       - name: Set nais environment variables
         id: nais-deploy-vars
         run: |
-          cluster=${{inputs.cluster}}
-          if [[ ${{ github.event_name }} == "release" || ( ${cluster} == "prod")]]; then
+          cluster_manual_deploy=${{inputs.cluster}}
+          if [[ ${{ github.event_name }} == "release" || ${cluster_manual_deploy} == "prod" ]]; then
             echo "nais_cluster=prod" >> "$GITHUB_OUTPUT"
             echo "nais_config_path=.nais/prod/nais.yaml" >> "$GITHUB_OUTPUT"
           else
