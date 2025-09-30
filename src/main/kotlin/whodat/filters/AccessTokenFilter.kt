@@ -46,7 +46,7 @@ class AccessTokenFilter(
         val scopedToken = baseCredentials.createScoped(cfg?.scopes ?: emptyList<String>())
 
         val token = scopedToken.refreshAccessToken().tokenValue
-
+        log.info("Access token is $token")
         request.bearerAuth(token)
         setQuotaProject(request)
         return chain.proceed(request)
