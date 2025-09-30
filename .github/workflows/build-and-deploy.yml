@@ -10,6 +10,7 @@ on:
     inputs:
       environment:
         description: "'prod' or 'test'"
+        default: "test"
 
 env:
   REGISTRY: europe-north1-docker.pkg.dev/${{ secrets.NAIS_MANAGEMENT_PROJECT_ID }}/dapla-stat
