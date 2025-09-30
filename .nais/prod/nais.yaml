@@ -29,8 +29,7 @@ spec:
       value: naisprod
 
   envFrom:
-    - secret: gcp-keycloak-clients-project-id
-    - secret: whodat-mp-client-id
+    - secret: whodat
 
   replicas:
     min: 2
