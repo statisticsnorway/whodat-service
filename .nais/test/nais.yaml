@@ -12,6 +12,7 @@ spec:
 
   ingresses:
     - https://whodat-service.intern.test.ssb.no
+    - https://whodat-service.test.ssb.no
 
   accessPolicy:
     outbound:
