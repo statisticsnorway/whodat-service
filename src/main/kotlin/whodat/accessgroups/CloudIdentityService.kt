@@ -31,21 +31,16 @@ open class CloudIdentityService(
      * @return the list of all memberships
      */
     private suspend fun fetchMemberships(groupId: String?): List<Membership> {
-        val allMemberships: MutableList<Membership> = mutableListOf()
-        if (groupId.isNullOrBlank()) return allMemberships
+        if (groupId.isNullOrBlank()) return emptyList()
 
-        var pageToken: String? = null
-        do {
-            val resp: MembershipResponse =
-                cloudIdentityClient.listMembers(
-                    groupId,
-                    pageToken,
-                )
-            // memberships is guaranteed non-null
-            allMemberships.addAll(resp.memberships)
-            pageToken = resp.nextPageToken
-        } while (pageToken != null)
-
-        return allMemberships
+        tailrec suspend fun go(
+            pageToken: String?,
+            acc: List<Membership>,
+        ): List<Membership> {
+            val resp = cloudIdentityClient.listMembers(groupId, pageToken)
+            val newAcc = acc + resp.memberships
+            return if (resp.nextPageToken == null) newAcc else go(resp.nextPageToken, newAcc)
+        }
+        return go(null, emptyList())
     }
 }
