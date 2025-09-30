@@ -8,7 +8,7 @@ on:
       - main
   workflow_dispatch:
     inputs:
-      environment:
+      cluster:
         description: "'prod' or 'test'"
         default: "test"
 
@@ -24,6 +24,8 @@ jobs:
       contents: "read"
       id-token: "write"
     runs-on: ubuntu-latest
+    env:
+      cluster: ${{inputs.environment}}
     outputs:
       nais_cluster: ${{ steps.nais-deploy-vars.outputs.nais_cluster }}
       nais_config_path: ${{ steps.nais-deploy-vars.outputs.nais_config_path }}
@@ -35,7 +37,7 @@ jobs:
       - name: Set nais environment variables
         id: nais-deploy-vars
         run: |
-          if [[ ${{ github.event_name }} == "release" || ${{inputs.environment}} == "prod" ]]; then
+          if [[ ${{ github.event_name }} == "release" || ( ${{env.cluster}} == "prod")]]; then
             echo "nais_cluster=prod" >> "$GITHUB_OUTPUT"
             echo "nais_config_path=.nais/prod/nais.yaml" >> "$GITHUB_OUTPUT"
           else
