@@ -12,6 +12,7 @@
     <!--<logger name="io.micronaut.http.client" level="TRACE"/>-->
     <logger name="whodat.security" level="DEBUG"/>
     <logger name="io.micronaut.management.health.monitor.HealthMonitorTask" level="trace" />
+    <logger name="io.micronaut.management.health.indicator.client.ServiceHttpClientHealthIndicator" level="trace" />
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
