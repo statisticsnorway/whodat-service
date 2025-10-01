@@ -13,8 +13,6 @@ micronaut:
         mapping: /swagger-ui/**
     logger:
       levels:
-        io.micronaut.runtime: DEBUG
-        io.micronaut.http.server: DEBUG
         no.ssb.whodat.service: INFO
         io.micronaut.security: INFO
         io.micronaut.security.token.jwt.validator: DEBUG
