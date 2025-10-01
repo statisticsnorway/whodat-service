@@ -49,9 +49,11 @@ spec:
   liveness:
     path: /health/liveness
     port: 9191
+    timeout: 5
   readiness:
     path: /health/readiness
     port: 9191
+    timeout: 5
   startup:
     path: /health/liveness
     port: 9191
