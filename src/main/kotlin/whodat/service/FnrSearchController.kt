@@ -21,7 +21,6 @@ data class FindPersonsRequest(
     val foedselsEllerDNummer: String,
 )
 
-@ExecuteOn(TaskExecutors.BLOCKING)
 @Secured(WhodatServiceRole.USER)
 @Controller()
 private class FnrSearchController(
@@ -68,6 +67,7 @@ private class FnrSearchController(
         }
 
     @Post("/search")
+    @ExecuteOn(TaskExecutors.BLOCKING)
     suspend fun searchFnr(
         @Body request: FregClientRequest,
     ): HttpResponse<FregClientResponse> =
