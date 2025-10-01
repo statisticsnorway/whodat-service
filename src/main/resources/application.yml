@@ -62,7 +62,7 @@ micronaut:
 
 endpoints:
   all:
-    port: 9191
+    port: 11100
   environments:
     enabled: true
     sensitive: false
