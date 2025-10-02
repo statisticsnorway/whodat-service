@@ -14,7 +14,7 @@ open class CloudIdentityService(
     private val log = LoggerFactory.getLogger(CloudIdentityService::class.java)
 
     @Cacheable(value = ["cloud-identity-service-cache"], parameters = ["groupEmail"])
-    open suspend fun listMembers(groupEmail: String): List<Membership> {
+    open fun listMembers(groupEmail: String): List<Membership> {
         val lookup =
             cloudIdentityClient.lookup(
                 groupEmail,
@@ -30,10 +30,10 @@ open class CloudIdentityService(
      * @param groupId the id of the group
      * @return the list of all memberships
      */
-    private suspend fun fetchMemberships(groupId: String?): List<Membership> {
+    private fun fetchMemberships(groupId: String?): List<Membership> {
         if (groupId.isNullOrBlank()) return emptyList()
 
-        tailrec suspend fun go(
+        tailrec fun go(
             pageToken: String?,
             acc: List<Membership>,
         ): List<Membership> {

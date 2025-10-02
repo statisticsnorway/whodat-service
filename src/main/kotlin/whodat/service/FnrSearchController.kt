@@ -21,6 +21,7 @@ data class FindPersonsRequest(
     val foedselsEllerDNummer: String,
 )
 
+@ExecuteOn(TaskExecutors.BLOCKING)
 @Secured(WhodatServiceRole.USER)
 @Controller()
 private class FnrSearchController(
@@ -42,47 +43,40 @@ private class FnrSearchController(
 
       The entire flow here can be described as keycloak -> 'maskinporten guardian' -> 'maskinporten'
      */
-    private suspend fun maskinPortenTokenKeyExchange(): String =
-        coroutineScope {
-            val maskinPortenGuardianAuth: String = toBase64(gcpSecretManagerClient.authString())
-            val keycloakResponse =
-                async {
-                    keycloakClient.fetchAccessToken(
-                        "Basic $maskinPortenGuardianAuth",
-                        mapOf(
-                            "grant_type" to "client_credentials",
-                        ),
-                    )
-                }.await()
+    private fun maskinPortenTokenKeyExchange(): String {
+        val maskinPortenGuardianAuth: String = toBase64(gcpSecretManagerClient.authString())
+        val keycloakResponse =
+            keycloakClient.fetchAccessToken(
+                "Basic $maskinPortenGuardianAuth",
+                mapOf(
+                    "grant_type" to "client_credentials",
+                ),
+            )
 
-            val maskinPortenResponse =
-                async {
-                    maskinPortenGuardianClient.fetchAccessToken(
-                        authorization = "Bearer ${keycloakResponse.accessToken}",
-                        emptyMap(),
-                    )
-                }.await()
+        val maskinPortenResponse =
+            maskinPortenGuardianClient.fetchAccessToken(
+                authorization = "Bearer ${keycloakResponse.accessToken}",
+                emptyMap(),
+            )
 
-            return@coroutineScope maskinPortenResponse.accessToken
-        }
+        return maskinPortenResponse.accessToken
+    }
 
     @Post("/search")
-    @ExecuteOn(TaskExecutors.BLOCKING)
-    suspend fun searchFnr(
+    fun searchFnr(
         @Body request: FregClientRequest,
-    ): HttpResponse<FregClientResponse> =
-        coroutineScope {
-            log.info(
-                "Received request with fields \"{}\"",
-                FregClientRequest::class
-                    .memberProperties
-                    .filter { it.get(request) != null }
-                    .joinToString(", ") { it.name },
-            )
-            val maskinPortenToken = maskinPortenTokenKeyExchange()
+    ): HttpResponse<FregClientResponse> {
+        log.info(
+            "Received request with fields \"{}\"",
+            FregClientRequest::class
+                .memberProperties
+                .filter { it.get(request) != null }
+                .joinToString(", ") { it.name },
+        )
+        val maskinPortenToken = maskinPortenTokenKeyExchange()
 
-            val results = fregClient.searchFnr("Bearer $maskinPortenToken", request)
+        val results = fregClient.searchFnr("Bearer $maskinPortenToken", request)
 
-            return@coroutineScope HttpResponse.ok(results)
-        }
+        return HttpResponse.ok(results)
+    }
 }
