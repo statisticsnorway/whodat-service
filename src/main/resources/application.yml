@@ -1,21 +1,6 @@
 micronaut:
   application:
     name: whodat-service
-  http:
-    client:
-      pool:
-        max-pending-connections: 10000
-        max-pending-acquires: 10000
-        acquire-timeout: 60s
-      event-loop-group: http-client
-      read-timeout: 20s
-  netty:
-    event-loops:
-      default:
-        loom-carrier: true
-      http-client:
-        loom-carrier: true
-        num-threads: 100
   server:
     port: 9191
     netty:
