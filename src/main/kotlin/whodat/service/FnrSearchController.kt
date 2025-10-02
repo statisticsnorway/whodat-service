@@ -7,6 +7,8 @@ import io.micronaut.http.annotation.Post
 import io.micronaut.security.annotation.Secured
 import io.micronaut.serde.annotation.Serdeable
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import no.ssb.whodat.gcp.GCPSecretManagerClient
 import org.slf4j.LoggerFactory
 import whodat.security.WhodatServiceRole
@@ -72,10 +74,13 @@ private class FnrSearchController(
                     .filter { it.get(request) != null }
                     .joinToString(", ") { it.name },
             )
-            val maskinPortenToken = withContext(Dispatchers.IO) { maskinPortenTokenKeyExchange() }
+            val limiter = Semaphore(50)
+            limiter.withPermit {
+                val maskinPortenToken = withContext(Dispatchers.IO) { maskinPortenTokenKeyExchange() }
 
-            val results =
-                fregClient.searchFnr("Bearer $maskinPortenToken", request)
+                val results =
+                    fregClient.searchFnr("Bearer $maskinPortenToken", request)
+            }
 
             return@coroutineScope HttpResponse.ok(results)
         }
