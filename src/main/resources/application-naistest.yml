@@ -10,10 +10,13 @@ micronaut:
     event-loops:
       default:
         loom-carrier: true
+      http-client:
+        loom-carrier: true
   http:
     client:
       pool:
         connection-locality: enforced-always
+      event-loop-group: http-client
       read-timeout: 20s
     services:
       cloud-identity-service:
