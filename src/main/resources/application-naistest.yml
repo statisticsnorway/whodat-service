@@ -16,9 +16,6 @@ micronaut:
   http:
     client:
       pool:
-        max-pending-connections: 10000
-        max-pending-acquires: 10000
-        acquire-timeout: 60s
         connection-locality: enforced-always
       event-loop-group: http-client
       read-timeout: 20s
