@@ -74,7 +74,7 @@ private class FnrSearchController(
                     .filter { it.get(request) != null }
                     .joinToString(", ") { it.name },
             )
-            val limiter = Semaphore(50)
+            val limiter = Semaphore(20)
             limiter.withPermit {
                 val maskinPortenToken = withContext(Dispatchers.IO) { maskinPortenTokenKeyExchange() }
 
