@@ -12,7 +12,7 @@ plugins {
     alias(libs.plugins.cyclonedx)
 }
 
-version = "0.1.0"
+version = "0.5.0"
 group = "no.ssb.whodat"
 
 val kotlinVersion = project.properties["kotlinVersion"]
@@ -84,6 +84,9 @@ tasks.cyclonedxBom {
 }
 
 jib {
+    container {
+        jvmFlags = listOf("--add-opens=java.base/java.lang=ALL-UNNAMED")
+    }
     from {
         image = "gcr.io/distroless/java21-debian12@sha256:70e8a4991b6e37cb1eb8eac3b717ed0d68407d1150cf30235d50cd33b2c44f7e"
         platforms {
@@ -99,12 +102,17 @@ jib {
     }
 }
 
+tasks.withType<JavaExec> {
+    jvmArgs = listOf("--add-opens", "java.base/java.lang=ALL-UNNAMED")
+}
+
 tasks.withType<Test> {
     environment("MICRONAUT_CONFIG_CLIENT_ENABLED", "false")
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed", "standardOut", "standardError")
     }
+    jvmArgs = listOf("--add-opens", "java.base/java.lang=ALL-UNNAMED")
 }
 
 tasks.withType<Jar> {
@@ -124,7 +132,7 @@ tasks.withType<Jar> {
 tasks.register<JavaExec>("runLocal") {
     mainClass.set("no.ssb.whodat.ApplicationKt")
     classpath = sourceSets.main.get().runtimeClasspath
-    jvmArgs = listOf("-Dmicronaut.environments=local")
+    jvmArgs = listOf("-Dmicronaut.environments=local", "--add-opens", "java.base/java.lang=ALL-UNNAMED")
 }
 
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {

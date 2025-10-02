@@ -7,12 +7,20 @@
             <pattern>%cyan(%d{HH:mm:ss.SSS}) %gray([%thread]) %highlight(%-5level) %magenta(%logger{36}) - %msg%n</pattern>
         </encoder>
     </appender>
+    <appender name="ASYNC_STDOUT" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="STDOUT"/>
+        <queueSize>8192</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+    </appender>
 
     <logger name="io.netty.handler.logging" level="TRACE"/>
     <!--<logger name="io.micronaut.http.client" level="TRACE"/>-->
     <logger name="whodat.security" level="DEBUG"/>
-
+    <logger name="io.micronaut.runtime" level="DEBUG"/>
+    <logger name="io.micronaut.http.server" level="DEBUG"/>
+    <logger name="io.micronaut.management.health.monitor.HealthMonitorTask" level="trace" />
+    <logger name="io.micronaut.management.health.indicator.client.ServiceHttpClientHealthIndicator" level="trace" />
     <root level="INFO">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ASYNC_STDOUT" />
     </root>
 </configuration>

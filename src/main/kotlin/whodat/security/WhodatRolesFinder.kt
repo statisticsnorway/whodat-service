@@ -10,7 +10,9 @@ import io.micronaut.security.token.DefaultRolesFinder
 import io.micronaut.security.token.RolesFinder
 import io.micronaut.security.token.config.TokenConfiguration
 import jakarta.inject.Singleton
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import org.reactivestreams.Publisher
 import org.slf4j.LoggerFactory
 import whodat.accessgroups.CloudIdentityService
 import whodat.accessgroups.Membership
@@ -23,17 +25,16 @@ data class StaticRolesConfig(
 
 @Singleton
 @Replaces(bean = DefaultRolesFinder::class)
-@ExecuteOn(TaskExecutors.BLOCKING)
 class WhodatRolesFinder(
     private val tokenConfiguration: TokenConfiguration,
     private val rolesConfig: StaticRolesConfig,
     private val cloudIdentityService: CloudIdentityService,
-    private val applicationContext: ApplicationContext
+    private val applicationContext: ApplicationContext,
 ) : RolesFinder {
     private val log = LoggerFactory.getLogger(WhodatRolesFinder::class.java)
 
     override fun resolveRoles(attributes: Map<String, Any>): List<String> {
-        return runBlocking {
+        return runBlocking(Dispatchers.IO) {
             // We need to run this in a blocking manner, since we do not control the interface.
             val roles = mutableSetOf<String>()
             val trustedIssuer = isTrustedIssuer(attributes)
@@ -54,11 +55,11 @@ class WhodatRolesFinder(
 
             rolesConfig.userGroupNames?.forEach { group ->
                 val groupMembers = cloudIdentityService.listMembers(group)
-                val userIsGroupMember = groupMembers.any { it.preferredMemberKey?.id == email}
+                val userIsGroupMember = groupMembers.any { it.preferredMemberKey?.id == email }
                 when {
-                    group == "whodat-service-m2m-p@ssb.no" && userIsGroupMember  ->
+                    group == "whodat-service-m2m-p@ssb.no" && userIsGroupMember ->
                         roles.add(WhodatServiceRole.USER)
-                    activeEnvironments.contains("naisprod") && trustedIssuer && userIsGroupMember  ->
+                    activeEnvironments.contains("naisprod") && trustedIssuer && userIsGroupMember ->
                         roles.add(WhodatServiceRole.USER)
                     activeEnvironments.contains("naistest") && (trustedIssuer || userIsGroupMember) ->
                         roles.add(WhodatServiceRole.USER)

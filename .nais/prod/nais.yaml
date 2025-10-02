@@ -2,7 +2,7 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: whodat-service-develop
+  name: whodat-service
   namespace: {{team}}
   labels:
     team: {{team}}
@@ -11,35 +11,32 @@ spec:
   port: 9191
 
   ingresses:
-    - https://whodat-service-develop.intern.test.ssb.no
-    - https://whodat-service.test.ssb.no
+    - https://whodat-service.intern.ssb.no
 
   accessPolicy:
     outbound:
       external:
-        - host: auth.test.ssb.no
-        - host: guardian.intern.test.ssb.no
+        - host: auth.ssb.no
+        - host: guardian.intern.ssb.no
         - host: "secretmanager.googleapis.com"
         - host: "www.googleapis.com"
         - host: "cloudidentity.googleapis.com"
-        - host: "labid.lab.dapla-test-external.ssb.no"
-        - host: "labid.lab.dapla-dev-external.ssb.no"
-        - host: "guardian.intern.test.ssb.no"
-        - host: "folkeregisteret-api-konsument.sits.no"
+        - host: "labid.lab.dapla-external.ssb.no"
+        - host: "folkeregisteret.api.skatteetaten.no"
 
   env:
     - name: MICRONAUT_ENVIRONMENTS
-      value: naistest
-  
+      value: naisprod
+
   envFrom:
     - secret: whodat
 
   replicas:
-    min: 1
-    max: 1
+    min: 2
+    max: 2
   resources:
     requests:
-      cpu: 200m
+      cpu: 400m
       memory: 1000Mi
     limits:
       memory: 1500Mi
@@ -51,14 +48,14 @@ spec:
 
   liveness:
     path: /health/liveness
-    port: 11100
+    port: 9191
     timeout: 5       # seconds
     initialDelay: 45 # seconds
   readiness:
     path: /health/readiness
-    port: 11100
+    port: 9191
     timeout: 5       # seconds
     initialDelay: 45 # seconds
   startup:
     path: /health/liveness
-    port: 11100
+    port: 9191

@@ -3,27 +3,23 @@ guardian:
 keycloak:
   gcp-client-project-id: ${GCP_KEYCLOAK_CLIENTS_PROJECT_ID}
   gcp-client-team-uniform-name: dapla-stat
-  keycloak-url: auth.test.ssb.no
+  keycloak-url: auth.ssb.no
 
 micronaut:
   http:
-    client:
-      event-loop-group: default
-      pool:
-        connection-locality: enforced_always
     services:
       cloud-identity-service:
         url: https://cloudidentity.googleapis.com
         path: '/v1'
         read-timeout: 60s
       keycloak:
-        url: https://auth.test.ssb.no/
+        url: https://auth.ssb.no/
         read-timeout: 60s
       maskinporten:
-        url: https://guardian.intern.test.ssb.no/
+        url: https://guardian.intern.ssb.no/
         read-timeout: 60s
       freg:
-        url: https://folkeregisteret-api-konsument.sits.no/
+        url: https://folkeregisteret.api.skatteetaten.no/
         read-timeout: 60s
 
   caches:
@@ -35,12 +31,10 @@ micronaut:
       jwt:
         signatures:
           jwks:
-            keycloak-nais-test:
-              url: 'https://auth.test.ssb.no/realms/ssb/protocol/openid-connect/certs'
-            lab-id-north1-test:
-              url: 'https://labid.lab.dapla-test-external.ssb.no/jwks'
-            lab-id-north1-dev:
-              url: 'https://labid.lab.dapla-dev-external.ssb.no/jwks'
+            keycloak-nais-prod:
+              url: 'https://auth.ssb.no/realms/ssb/protocol/openid-connect/certs'
+            lab-id-north1-prod:
+              url: 'https://labid.lab.dapla-external.ssb.no/jwks'
             google:
               url: 'https://www.googleapis.com/oauth2/v3/certs'
 
@@ -56,9 +50,8 @@ gcp:
 
 app-roles:
   trusted-issuers:
-    - 'https://labid.lab.dapla-dev-external.ssb.no'
-    - 'https://labid.lab.dapla-test-external.ssb.no'
-    - 'https://auth.test.ssb.no/realms/ssb/protocol/openid-connect/certs'
+    - 'https://labid.lab.dapla-external.ssb.no'
+    - 'https://auth.ssb.no/realms/ssb/protocol/openid-connect/certs'
   user-group-names:
-    - 'whodat-service-m2m-t@ssb.no'
-    - 'whodat-service-user-t@ssb.no'
+    - 'whodat-service-m2m-p@ssb.no'
+    - 'whodat-service-user-p@ssb.no'
