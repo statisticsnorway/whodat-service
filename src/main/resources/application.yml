@@ -8,8 +8,11 @@ micronaut:
   server:
     port: 9191
     netty:
-      access-logger:
-        enabled: true
+      event-loops:
+        default:
+          loom-carrier: true
+        http-client:
+          loom-carrier: true
     thread-selection: blocking
   router:
     static-resources:
