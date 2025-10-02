@@ -44,22 +44,18 @@ private class FnrSearchController(
         coroutineScope {
             val maskinPortenGuardianAuth: String = toBase64(gcpSecretManagerClient.authString())
             val keycloakResponse =
-                async {
-                    keycloakClient.fetchAccessToken(
-                        "Basic $maskinPortenGuardianAuth",
-                        mapOf(
-                            "grant_type" to "client_credentials",
-                        ),
-                    )
-                }.await()
+                keycloakClient.fetchAccessToken(
+                    "Basic $maskinPortenGuardianAuth",
+                    mapOf(
+                        "grant_type" to "client_credentials",
+                    ),
+                )
 
             val maskinPortenResponse =
-                async {
-                    maskinPortenGuardianClient.fetchAccessToken(
-                        authorization = "Bearer ${keycloakResponse.accessToken}",
-                        emptyMap(),
-                    )
-                }.await()
+                maskinPortenGuardianClient.fetchAccessToken(
+                    authorization = "Bearer ${keycloakResponse.accessToken}",
+                    emptyMap(),
+                )
 
             return@coroutineScope maskinPortenResponse.accessToken
         }
@@ -78,7 +74,8 @@ private class FnrSearchController(
             )
             val maskinPortenToken = maskinPortenTokenKeyExchange()
 
-            val results = fregClient.searchFnr("Bearer $maskinPortenToken", request)
+            val results =
+                fregClient.searchFnr("Bearer $maskinPortenToken", request)
 
             return@coroutineScope HttpResponse.ok(results)
         }
