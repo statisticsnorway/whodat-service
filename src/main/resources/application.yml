@@ -1,19 +1,15 @@
 micronaut:
   application:
     name: whodat-service
+  server:
+    port: 9191
+    thread-selection: blocking
   netty:
     event-loops:
       default:
         loom-carrier: true
-  server:
-    port: 9191
-    netty:
-      event-loops:
-        default:
-          loom-carrier: true
-        http-client:
-          loom-carrier: true
-    thread-selection: blocking
+      http-client:
+        loom-carrier: true
   router:
     static-resources:
       swagger:

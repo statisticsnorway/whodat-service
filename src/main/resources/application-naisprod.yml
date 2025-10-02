@@ -11,6 +11,7 @@ micronaut:
       pool:
         connection-locality: enforced-always
       event-loop-group: http-client
+      read-timeout: 20s
     services:
       cloud-identity-service:
         url: https://cloudidentity.googleapis.com

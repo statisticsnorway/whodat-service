@@ -8,9 +8,10 @@ keycloak:
 micronaut:
   http:
     client:
-      event-loop-group: default
       pool:
-        connection-locality: enforced_always
+        connection-locality: enforced-always
+      event-loop-group: http-client
+      read-timeout: 20s
     services:
       cloud-identity-service:
         url: https://cloudidentity.googleapis.com
