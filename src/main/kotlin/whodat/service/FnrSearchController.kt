@@ -72,7 +72,7 @@ private class FnrSearchController(
                     .joinToString(", ") { it.name },
             )
 
-            val maskinPortenToken = withContext(Dispatchers.IO) { maskinPortenTokenKeyExchange() }
+            val maskinPortenToken = maskinPortenTokenKeyExchange()
 
             val results =
                 fregClient.searchFnr("Bearer $maskinPortenToken", request)
