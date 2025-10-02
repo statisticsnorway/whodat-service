@@ -84,6 +84,9 @@ tasks.cyclonedxBom {
 }
 
 jib {
+    container {
+        jvmFlags = listOf("--add-opens=java.base/java.lang=ALL-UNNAMED")
+    }
     from {
         image = "gcr.io/distroless/java21-debian12@sha256:70e8a4991b6e37cb1eb8eac3b717ed0d68407d1150cf30235d50cd33b2c44f7e"
         platforms {
