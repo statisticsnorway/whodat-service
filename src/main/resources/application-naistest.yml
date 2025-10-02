@@ -12,7 +12,6 @@ micronaut:
         loom-carrier: true
       http-client:
         loom-carrier: true
-        num-threads: 100
   http:
     client:
       pool:
