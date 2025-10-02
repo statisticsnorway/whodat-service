@@ -60,6 +60,8 @@ micronaut:
     cloud-identity-service-cache:
       charset: 'UTF-8'
       expire-after-write: 2m
+    maskinporten-token-cache:
+      expire-after-write: 100s # Maskinporten tokens have a lifetime of 120 seconds
 
 endpoints:
   all:

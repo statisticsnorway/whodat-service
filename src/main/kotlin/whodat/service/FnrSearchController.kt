@@ -1,5 +1,6 @@
 package no.ssb.whodat.service
 
+import io.micronaut.cache.annotation.Cacheable
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
@@ -30,10 +31,24 @@ data class WhodatVariables(
     val fylkesnummer: String? = null,
 )
 
+@Serdeable
+data class WhodatModifiers(
+    val inkluderOppholdsadresse: Boolean? = null,
+    val soekFonetisk: Boolean? = null,
+    val inkluderDoede: Boolean? = null,
+    val opplysningsgrunnlag: String? = null,
+    val maksTreff: Int? = null,
+)
+
+@Serdeable
+data class SearchRequest(
+    val whodatVariables: List<WhodatVariables>,
+    val whodatModifiers: WhodatModifiers,
+)
+
 @Secured(WhodatServiceRole.USER)
 @Controller()
 open class FnrSearchController(
-    private val cacheManager: CacheManager<String>,
     private val maskinPortenGuardianClient: MaskinportenGuardianClient,
     private val keycloakClient: KeycloakClient,
     private val gcpSecretManagerClient: GCPSecretManagerClient,
@@ -52,6 +67,22 @@ open class FnrSearchController(
 
       The entire flow here can be described as keycloak -> 'maskinporten guardian' -> 'maskinporten'
      */
+    @Cacheable(value = ["maskinporten-token-cache"])
+    open suspend fun maskinPortenTokenKeyExchange(): String =
+        coroutineScope {
+            val maskinPortenGuardianAuth: String = toBase64(gcpSecretManagerClient.authString())
+            val keycloakResponse =
+                keycloakClient.fetchAccessToken(
+                    "Basic $maskinPortenGuardianAuth",
+                    mapOf(
+                        "grant_type" to "client_credentials",
+                    ),
+                )
+            val maskinPortenResponse =
+                maskinPortenGuardianClient.fetchAccessToken(
+                    authorization = "Bearer ${keycloakResponse.accessToken}",
+                    emptyMap(),
+                )
 
     private val cache: SyncCache<String> by lazy {
         cacheManager.getCache("maskinporten-token-cache")
@@ -84,19 +115,21 @@ open class FnrSearchController(
         @Body request: SearchRequest,
     ): HttpResponse<List<FregClientResponse>> =
         coroutineScope {
-            log.info(
-                "Received request with fields \"{}\"",
-                FregClientRequest::class
-                    .memberProperties
-                    .filter { it.get(request) != null }
-                    .joinToString(", ") { it.name },
-            )
+            log.info("Received request with ${request.whodatVariables.size} number of rows")
+            val requestSemaphore = Semaphore(1000)
 
-            val maskinPortenToken = withContext(Dispatchers.IO) { maskinPortenTokenKeyExchange() }
-
-            val results =
-                fregClient.searchFnr("Bearer $maskinPortenToken", request)
-
-            return@coroutineScope HttpResponse.ok(results)
+            val futures =
+                request.whodatVariables.map {
+                    async {
+                        requestSemaphore.withPermit {
+                            val maskinPortenToken = maskinPortenTokenKeyExchange()
+                            fregClient.searchFnr(
+                                "Bearer $maskinPortenToken",
+                                FregClientRequest.from(it, request.whodatModifiers),
+                            )
+                        }
+                    }
+                }
+            return@coroutineScope HttpResponse.ok(futures.awaitAll())
         }
 }
