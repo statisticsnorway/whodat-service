@@ -52,7 +52,6 @@ private class FnrSearchController(
                         "grant_type" to "client_credentials",
                     ),
                 )
-
             val maskinPortenResponse =
                 maskinPortenGuardianClient.fetchAccessToken(
                     authorization = "Bearer ${keycloakResponse.accessToken}",
