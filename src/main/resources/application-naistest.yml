@@ -6,11 +6,21 @@ keycloak:
   keycloak-url: auth.test.ssb.no
 
 micronaut:
+  netty:
+    event-loops:
+      default:
+        loom-carrier: true
+      http-client:
+        loom-carrier: true
+        num-threads: 100
   http:
     client:
-      event-loop-group: default
       pool:
-        connection-locality: enforced_always
+        max-pending-connections: 10000
+        max-pending-acquires: 10000
+        acquire-timeout: 60s
+      event-loop-group: http-client
+      read-timeout: 20s
     services:
       cloud-identity-service:
         url: https://cloudidentity.googleapis.com
