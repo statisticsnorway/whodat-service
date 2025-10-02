@@ -27,10 +27,6 @@ micronaut:
         url: https://folkeregisteret-api-konsument.sits.no/
         read-timeout: 60s
 
-  caches:
-    cloud-identity-service-cache:
-      expire-after-write: 30s
-
   security:
     token:
       jwt:

@@ -1,5 +1,6 @@
 package no.ssb.whodat.service
 
+import io.micronaut.cache.annotation.Cacheable
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
@@ -17,13 +18,37 @@ import java.util.Base64
 import kotlin.reflect.full.memberProperties
 
 @Serdeable
-data class FindPersonsRequest(
-    val foedselsEllerDNummer: String,
+data class WhodatVariables(
+    val navn: String? = null,
+    val kjoenn: String? = null,
+    val foedselsdato: String? = null,
+    val foedselsaarFraOgMed: String? = null,
+    val foedselsaarTilOgMed: String? = null,
+    val adressenavn: String? = null,
+    val husnummer: String? = null,
+    val postnummer: String? = null,
+    val kommunenummer: String? = null,
+    val fylkesnummer: String? = null,
+)
+
+@Serdeable
+data class WhodatModifiers(
+    val inkluderOppholdsadresse: Boolean? = null,
+    val soekFonetisk: Boolean? = null,
+    val inkluderDoede: Boolean? = null,
+    val opplysningsgrunnlag: String? = null,
+    val maksTreff: Int? = null,
+)
+
+@Serdeable
+data class SearchRequest(
+    val whodatVariables: List<WhodatVariables>,
+    val whodatModifiers: WhodatModifiers,
 )
 
 @Secured(WhodatServiceRole.USER)
 @Controller()
-private class FnrSearchController(
+open class FnrSearchController(
     private val maskinPortenGuardianClient: MaskinportenGuardianClient,
     private val keycloakClient: KeycloakClient,
     private val gcpSecretManagerClient: GCPSecretManagerClient,
@@ -42,7 +67,8 @@ private class FnrSearchController(
 
       The entire flow here can be described as keycloak -> 'maskinporten guardian' -> 'maskinporten'
      */
-    private suspend fun maskinPortenTokenKeyExchange(): String =
+    @Cacheable(value = ["maskinporten-token-cache"])
+    open suspend fun maskinPortenTokenKeyExchange(): String =
         coroutineScope {
             val maskinPortenGuardianAuth: String = toBase64(gcpSecretManagerClient.authString())
             val keycloakResponse =
@@ -63,22 +89,24 @@ private class FnrSearchController(
 
     @Post("/search")
     suspend fun searchFnr(
-        @Body request: FregClientRequest,
-    ): HttpResponse<FregClientResponse> =
+        @Body request: SearchRequest,
+    ): HttpResponse<List<FregClientResponse>> =
         coroutineScope {
-            log.info(
-                "Received request with fields \"{}\"",
-                FregClientRequest::class
-                    .memberProperties
-                    .filter { it.get(request) != null }
-                    .joinToString(", ") { it.name },
-            )
+            log.info("Received request with ${request.whodatVariables.size} number of rows")
+            val requestSemaphore = Semaphore(1000)
 
-            val maskinPortenToken = withContext(Dispatchers.IO) { maskinPortenTokenKeyExchange() }
-
-            val results =
-                fregClient.searchFnr("Bearer $maskinPortenToken", request)
-
-            return@coroutineScope HttpResponse.ok(results)
+            val futures =
+                request.whodatVariables.map {
+                    async {
+                        requestSemaphore.withPermit {
+                            val maskinPortenToken = maskinPortenTokenKeyExchange()
+                            fregClient.searchFnr(
+                                "Bearer $maskinPortenToken",
+                                FregClientRequest.from(it, request.whodatModifiers),
+                            )
+                        }
+                    }
+                }
+            return@coroutineScope HttpResponse.ok(futures.awaitAll())
         }
 }
