@@ -99,12 +99,17 @@ jib {
     }
 }
 
+tasks.withType<JavaExec> {
+    jvmArgs = listOf("--add-opens", "java.base/java.lang=ALL-UNNAMED")
+}
+
 tasks.withType<Test> {
     environment("MICRONAUT_CONFIG_CLIENT_ENABLED", "false")
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed", "standardOut", "standardError")
     }
+    jvmArgs = listOf("--add-opens", "java.base/java.lang=ALL-UNNAMED")
 }
 
 tasks.withType<Jar> {
@@ -124,7 +129,7 @@ tasks.withType<Jar> {
 tasks.register<JavaExec>("runLocal") {
     mainClass.set("no.ssb.whodat.ApplicationKt")
     classpath = sourceSets.main.get().runtimeClasspath
-    jvmArgs = listOf("-Dmicronaut.environments=local")
+    jvmArgs = listOf("-Dmicronaut.environments=local", "--add-opens", "java.base/java.lang=ALL-UNNAMED")
 }
 
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
