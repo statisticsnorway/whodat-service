@@ -74,13 +74,11 @@ private class FnrSearchController(
                     .filter { it.get(request) != null }
                     .joinToString(", ") { it.name },
             )
-            val limiter = Semaphore(20)
-            limiter.withPermit {
-                val maskinPortenToken = withContext(Dispatchers.IO) { maskinPortenTokenKeyExchange() }
 
-                val results =
-                    fregClient.searchFnr("Bearer $maskinPortenToken", request)
-            }
+            val maskinPortenToken = withContext(Dispatchers.IO) { maskinPortenTokenKeyExchange() }
+
+            val results =
+                fregClient.searchFnr("Bearer $maskinPortenToken", request)
 
             return@coroutineScope HttpResponse.ok(results)
         }
