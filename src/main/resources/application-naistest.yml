@@ -6,12 +6,6 @@ keycloak:
   keycloak-url: auth.test.ssb.no
 
 micronaut:
-  netty:
-    event-loops:
-      default:
-        loom-carrier: true
-      http-client:
-        loom-carrier: true
   http:
     client:
       pool:

@@ -7,8 +7,6 @@ import io.micronaut.http.annotation.Post
 import io.micronaut.security.annotation.Secured
 import io.micronaut.serde.annotation.Serdeable
 import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
 import no.ssb.whodat.gcp.GCPSecretManagerClient
 import org.slf4j.LoggerFactory
 import whodat.security.WhodatServiceRole
@@ -52,7 +50,6 @@ private class FnrSearchController(
                         "grant_type" to "client_credentials",
                     ),
                 )
-
             val maskinPortenResponse =
                 maskinPortenGuardianClient.fetchAccessToken(
                     authorization = "Bearer ${keycloakResponse.accessToken}",
