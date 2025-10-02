@@ -49,7 +49,7 @@ interface FregClient {
         Header(name = ACCEPT, value = "application/json"),
     )
     @Consumes(TEXT_PLAIN)
-    fun searchFnr(
+    suspend fun searchFnr(
         @Header authorization: String,
         @QueryValue request: FregClientRequest,
     ): FregClientResponse

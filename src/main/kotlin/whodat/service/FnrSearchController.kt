@@ -4,8 +4,6 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Post
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
 import io.micronaut.security.annotation.Secured
 import io.micronaut.serde.annotation.Serdeable
 import kotlinx.coroutines.*
@@ -21,7 +19,6 @@ data class FindPersonsRequest(
     val foedselsEllerDNummer: String,
 )
 
-@ExecuteOn(TaskExecutors.BLOCKING)
 @Secured(WhodatServiceRole.USER)
 @Controller()
 private class FnrSearchController(
@@ -43,40 +40,46 @@ private class FnrSearchController(
 
       The entire flow here can be described as keycloak -> 'maskinporten guardian' -> 'maskinporten'
      */
-    private fun maskinPortenTokenKeyExchange(): String {
-        val maskinPortenGuardianAuth: String = toBase64(gcpSecretManagerClient.authString())
-        val keycloakResponse =
-            keycloakClient.fetchAccessToken(
-                "Basic $maskinPortenGuardianAuth",
-                mapOf(
-                    "grant_type" to "client_credentials",
-                ),
-            )
+    private suspend fun maskinPortenTokenKeyExchange(): String =
+        coroutineScope {
+            val maskinPortenGuardianAuth: String = toBase64(gcpSecretManagerClient.authString())
+            val keycloakResponse =
+                async {
+                    keycloakClient.fetchAccessToken(
+                        "Basic $maskinPortenGuardianAuth",
+                        mapOf(
+                            "grant_type" to "client_credentials",
+                        ),
+                    )
+                }.await()
 
-        val maskinPortenResponse =
-            maskinPortenGuardianClient.fetchAccessToken(
-                authorization = "Bearer ${keycloakResponse.accessToken}",
-                emptyMap(),
-            )
+            val maskinPortenResponse =
+                async {
+                    maskinPortenGuardianClient.fetchAccessToken(
+                        authorization = "Bearer ${keycloakResponse.accessToken}",
+                        emptyMap(),
+                    )
+                }.await()
 
-        return maskinPortenResponse.accessToken
-    }
+            return@coroutineScope maskinPortenResponse.accessToken
+        }
 
     @Post("/search")
-    fun searchFnr(
+    suspend fun searchFnr(
         @Body request: FregClientRequest,
-    ): HttpResponse<FregClientResponse> {
-        log.info(
-            "Received request with fields \"{}\"",
-            FregClientRequest::class
-                .memberProperties
-                .filter { it.get(request) != null }
-                .joinToString(", ") { it.name },
-        )
-        val maskinPortenToken = maskinPortenTokenKeyExchange()
+    ): HttpResponse<FregClientResponse> =
+        coroutineScope {
+            log.info(
+                "Received request with fields \"{}\"",
+                FregClientRequest::class
+                    .memberProperties
+                    .filter { it.get(request) != null }
+                    .joinToString(", ") { it.name },
+            )
+            val maskinPortenToken = maskinPortenTokenKeyExchange()
 
-        val results = fregClient.searchFnr("Bearer $maskinPortenToken", request)
+            val results = fregClient.searchFnr("Bearer $maskinPortenToken", request)
 
-        return HttpResponse.ok(results)
-    }
+            return@coroutineScope HttpResponse.ok(results)
+        }
 }

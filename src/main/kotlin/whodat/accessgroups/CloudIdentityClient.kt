@@ -16,7 +16,8 @@ interface CloudIdentityClient {
      * @param groupKeyId the email address of the group
      */
     @Get("/groups:lookup?groupKey.id={groupKeyId}")
-    fun lookup(groupKeyId: String): LookupResponse
+    suspend fun lookup(groupKeyId: String): LookupResponse
+
 
     /**
      * List all members of a group.
@@ -26,7 +27,7 @@ interface CloudIdentityClient {
      * @param pageToken for pagination
      */
     @Get("/groups/{groupId}/memberships")
-    fun listMembers(
+    suspend fun listMembers(
         groupId: String,
         @QueryValue pageToken: String? = null,
     ): MembershipResponse
@@ -36,7 +37,7 @@ interface CloudIdentityClient {
 @Serdeable.Deserializable
 data class MembershipResponse(
     val memberships: List<Membership> = listOf(),
-    val nextPageToken: String? = null,
+    val nextPageToken: String? = null
 )
 
 @Introspected

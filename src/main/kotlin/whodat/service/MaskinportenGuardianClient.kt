@@ -9,7 +9,6 @@ import io.micronaut.http.annotation.Headers
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.serde.annotation.Serdeable
-import org.reactivestreams.Publisher
 
 @Serdeable
 data class MaskinportenAccessTokenResponse(
@@ -26,7 +25,7 @@ interface MaskinportenGuardianClient {
         Header(name = CONTENT_TYPE, value = "application/json"),
     )
     @SingleResult
-    fun fetchAccessToken(
+    suspend fun fetchAccessToken(
         @Header authorization: String,
         @Body body: Map<String, String>,
     ): MaskinportenAccessTokenResponse
