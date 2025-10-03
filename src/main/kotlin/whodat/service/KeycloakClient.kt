@@ -27,7 +27,7 @@ interface KeycloakClient {
         Header(name = CONTENT_TYPE, value = "application/x-www-form-urlencoded"),
     )
     @Consumes(TEXT_PLAIN)
-    suspend fun fetchAccessToken(
+    fun fetchAccessToken(
         @Header authorization: String,
         @Body body: Map<String, String>, // pass {"grant_type": "client_credentials"}
     ): KeycloakAccessTokenResponse

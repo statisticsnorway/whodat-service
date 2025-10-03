@@ -25,7 +25,7 @@ interface MaskinportenGuardianClient {
         Header(name = CONTENT_TYPE, value = "application/json"),
     )
     @SingleResult
-    suspend fun fetchAccessToken(
+    fun fetchAccessToken(
         @Header authorization: String,
         @Body body: Map<String, String>,
     ): MaskinportenAccessTokenResponse
