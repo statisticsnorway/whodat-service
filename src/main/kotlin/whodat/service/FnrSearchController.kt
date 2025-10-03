@@ -70,6 +70,7 @@ open class FnrSearchController(
     @Cacheable(value = ["maskinporten-token-cache"])
     open suspend fun maskinPortenTokenKeyExchange(): String =
         coroutineScope {
+            log.info("Fetching maskinporten token")
             val maskinPortenGuardianAuth: String = toBase64(gcpSecretManagerClient.authString())
             val keycloakResponse =
                 keycloakClient.fetchAccessToken(
