@@ -110,10 +110,7 @@ open class FnrSearchController(
                 request.whodatVariables.map {
                     async {
                         requestSemaphore.withPermit {
-                            val maskinPortenToken =
-                                withContext(Dispatchers.IO) {
-                                    return@withContext maskinPortenTokenKeyExchangeBlocking()
-                                }
+                            val maskinPortenToken = maskinPortenTokenKeyExchange()
                             fregClient.searchFnr(
                                 "Bearer $maskinPortenToken",
                                 FregClientRequest.from(it, request.whodatModifiers),
