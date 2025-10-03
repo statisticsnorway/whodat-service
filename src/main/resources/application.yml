@@ -62,6 +62,7 @@ micronaut:
       expire-after-write: 2m
     maskinporten-token-cache:
       expire-after-write: 100s # Maskinporten tokens have a lifetime of 120 seconds
+      maximum-size: 1
 
 endpoints:
   all:
