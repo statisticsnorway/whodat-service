@@ -1,5 +1,7 @@
 package no.ssb.whodat.service
 
+import io.micronaut.cache.CacheManager
+import io.micronaut.cache.SyncCache
 import io.micronaut.cache.annotation.Cacheable
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
@@ -49,6 +51,7 @@ data class SearchRequest(
 @Secured(WhodatServiceRole.USER)
 @Controller()
 open class FnrSearchController(
+    private val cacheManager: CacheManager<String>,
     private val maskinPortenGuardianClient: MaskinportenGuardianClient,
     private val keycloakClient: KeycloakClient,
     private val gcpSecretManagerClient: GCPSecretManagerClient,
@@ -68,25 +71,32 @@ open class FnrSearchController(
       The entire flow here can be described as keycloak -> 'maskinporten guardian' -> 'maskinporten'
      */
 
-    @Cacheable("maskinporten-token-cache")
-    open fun maskinPortenTokenKeyExchangeBlocking(): String {
-        log.info("Fetching maskinporten token")
-        val maskinPortenGuardianAuth: String = toBase64(gcpSecretManagerClient.authString())
-        val keycloakResponse =
-            keycloakClient.fetchAccessToken(
-                "Basic $maskinPortenGuardianAuth",
-                mapOf(
-                    "grant_type" to "client_credentials",
-                ),
-            )
-        val maskinPortenResponse =
-            maskinPortenGuardianClient.fetchAccessToken(
-                authorization = "Bearer ${keycloakResponse.accessToken}",
-                emptyMap(),
-            )
-
-        return maskinPortenResponse.accessToken
+    private val cache: SyncCache<String> by lazy {
+        cacheManager.getCache("maskinporten-token-cache")
     }
+
+    @Cacheable("maskinporten-token-cache")
+    open suspend fun maskinPortenTokenKeyExchange(): String =
+        withContext(Dispatchers.IO) {
+            cache.get("token", String::class.java) {
+                log.info("Fetching maskinporten token")
+                val maskinPortenGuardianAuth: String = toBase64(gcpSecretManagerClient.authString())
+                val keycloakResponse =
+                    keycloakClient.fetchAccessToken(
+                        "Basic $maskinPortenGuardianAuth",
+                        mapOf(
+                            "grant_type" to "client_credentials",
+                        ),
+                    )
+                val maskinPortenResponse =
+                    maskinPortenGuardianClient.fetchAccessToken(
+                        authorization = "Bearer ${keycloakResponse.accessToken}",
+                        emptyMap(),
+                    )
+
+                maskinPortenResponse.accessToken
+            }
+        }
 
     @Post("/search")
     suspend fun searchFnr(
