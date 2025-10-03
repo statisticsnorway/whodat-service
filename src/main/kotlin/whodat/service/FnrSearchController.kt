@@ -93,7 +93,6 @@ open class FnrSearchController(
                         authorization = "Bearer ${keycloakResponse.accessToken}",
                         emptyMap(),
                     )
-
                 maskinPortenResponse.accessToken
             }
         }
