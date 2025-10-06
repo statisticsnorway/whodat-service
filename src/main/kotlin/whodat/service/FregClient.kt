@@ -29,12 +29,35 @@ data class FregClientRequest(
     val postnummer: String? = null,
     val kommunenummer: String? = null,
     val fylkesnummer: String? = null,
-    val inkluderOppholdsadresse: String? = null,
+    val inkluderOppholdsadresse: Boolean? = null,
     val soekFonetisk: Boolean? = null,
     val inkluderDoede: Boolean? = null,
     val opplysningsgrunnlag: String? = null,
     val maksTreff: Int? = null,
-)
+) {
+    companion object {
+        fun from(
+            variables: WhodatVariables,
+            modifiers: WhodatModifiers,
+        ) = FregClientRequest(
+            navn = variables.navn,
+            kjoenn = variables.kjoenn,
+            foedselsdato = variables.foedselsdato,
+            foedselsaarFraOgMed = variables.foedselsaarFraOgMed,
+            foedselsaarTilOgMed = variables.foedselsaarTilOgMed,
+            adressenavn = variables.adressenavn,
+            husnummer = variables.husnummer,
+            postnummer = variables.postnummer,
+            kommunenummer = variables.kommunenummer,
+            fylkesnummer = variables.fylkesnummer,
+            inkluderOppholdsadresse = modifiers.inkluderOppholdsadresse,
+            soekFonetisk = modifiers.soekFonetisk,
+            inkluderDoede = modifiers.inkluderDoede,
+            opplysningsgrunnlag = modifiers.opplysningsgrunnlag,
+            maksTreff = modifiers.maksTreff,
+        )
+    }
+}
 
 @Serdeable
 data class FregClientResponse(

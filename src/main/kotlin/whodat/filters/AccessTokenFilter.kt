@@ -2,6 +2,7 @@ package no.ssb.whodat.filters
 
 import com.google.auth.oauth2.GoogleCredentials
 import io.micronaut.context.ApplicationContext
+import io.micronaut.context.annotation.Requires
 import io.micronaut.context.annotation.Value
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MutableHttpRequest
