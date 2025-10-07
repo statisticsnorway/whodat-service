@@ -44,18 +44,18 @@ spec:
   prometheus:
     enabled: true
     path: /prometheus
-    port: "9191"
+    port: "11100"
 
   liveness:
     path: /health/liveness
-    port: 9191
+    port: 11100
     timeout: 5       # seconds
     initialDelay: 45 # seconds
   readiness:
     path: /health/readiness
-    port: 9191
+    port: 11100
     timeout: 5       # seconds
     initialDelay: 45 # seconds
   startup:
     path: /health/liveness
-    port: 9191
+    port: 11100
