@@ -6,6 +6,9 @@ metadata:
   namespace: {{team}}
   labels:
     team: {{team}}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "120"
 spec:
   image: "{{ image }}"  # Injected from the GitHub Action
   port: 9191
