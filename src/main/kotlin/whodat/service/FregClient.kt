@@ -16,6 +16,7 @@ import io.micronaut.http.annotation.QueryValue
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.serde.annotation.Serdeable
 import jakarta.validation.constraints.NotNull
+import whodat.filters.RateLimitRetryFilterMatcher
 
 @Serdeable
 data class FregClientRequest(
@@ -64,6 +65,7 @@ data class FregClientResponse(
     val foedselsEllerDNummer: List<String>,
 )
 
+@RateLimitRetryFilterMatcher
 @Client(id = "freg")
 interface FregClient {
     @Get("/folkeregisteret/offentlig-med-hjemmel/api/v1/personer/soek{?request*}")
