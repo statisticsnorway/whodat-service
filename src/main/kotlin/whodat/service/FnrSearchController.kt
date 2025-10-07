@@ -16,6 +16,7 @@ import no.ssb.whodat.gcp.GCPSecretManagerClient
 import org.slf4j.LoggerFactory
 import whodat.security.WhodatServiceRole
 import whodat.service.MaskinportenGuardianClient
+import whodat.service.MaskinportenTokenExchanger
 import java.util.Base64
 import kotlin.reflect.full.memberProperties
 
@@ -51,51 +52,10 @@ data class SearchRequest(
 @Secured(WhodatServiceRole.USER)
 @Controller()
 open class FnrSearchController(
-    private val cacheManager: CacheManager<String>,
-    private val maskinPortenGuardianClient: MaskinportenGuardianClient,
-    private val keycloakClient: KeycloakClient,
-    private val gcpSecretManagerClient: GCPSecretManagerClient,
     private val fregClient: FregClient,
+    private val maskinportenTokenExchanger: MaskinportenTokenExchanger,
 ) {
     private val log = LoggerFactory.getLogger(FnrSearchController::class.java)
-
-    companion object {
-        private fun toBase64(auth: String): String = Base64.getEncoder().encodeToString(auth.toByteArray())
-    }
-
-    /*
-      Handles the double key exchange for 'maskinporten' and 'maskinporten guardian' which consists of:
-        1. Fetching an access token for 'maskinporten' guardian from keycloak
-        2. Fetching a 'maskinporten' token from 'maskingporten' guardian
-
-      The entire flow here can be described as keycloak -> 'maskinporten guardian' -> 'maskinporten'
-     */
-
-    private val cache: SyncCache<String> by lazy {
-        cacheManager.getCache("maskinporten-token-cache")
-    }
-
-    @Cacheable("maskinporten-token-cache")
-    open suspend fun maskinPortenTokenKeyExchange(): String =
-        withContext(Dispatchers.IO) {
-            cache.get("token", String::class.java) {
-                log.info("Fetching maskinporten token")
-                val maskinPortenGuardianAuth: String = toBase64(gcpSecretManagerClient.authString())
-                val keycloakResponse =
-                    keycloakClient.fetchAccessToken(
-                        "Basic $maskinPortenGuardianAuth",
-                        mapOf(
-                            "grant_type" to "client_credentials",
-                        ),
-                    )
-                val maskinPortenResponse =
-                    maskinPortenGuardianClient.fetchAccessToken(
-                        authorization = "Bearer ${keycloakResponse.accessToken}",
-                        emptyMap(),
-                    )
-                maskinPortenResponse.accessToken
-            }
-        }
 
     @Post("/search")
     suspend fun searchFnr(
@@ -109,7 +69,7 @@ open class FnrSearchController(
                 request.whodatVariables.map {
                     async {
                         requestSemaphore.withPermit {
-                            val maskinPortenToken = maskinPortenTokenKeyExchange()
+                            val maskinPortenToken = maskinportenTokenExchanger.tokenExchange()
                             fregClient.searchFnr(
                                 "Bearer $maskinPortenToken",
                                 FregClientRequest.from(it, request.whodatModifiers),
