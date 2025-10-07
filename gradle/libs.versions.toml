@@ -28,6 +28,7 @@ micronautTest = "4.8.1"
 micronautValidation = "4.10.0"
 snakeyaml = "2.4"
 reactor = "3.7.9"
+ulidKotlin = "1.5.0"
 
 
 [libraries]
@@ -55,6 +56,7 @@ micronaut-cache-core = { module = "io.micronaut.cache:micronaut-cache-core", ver
 micronaut-cache-caffeine = { module = "io.micronaut.cache:micronaut-cache-caffeine", version.ref = "micronautCache" }
 micronaut-aop = { module = "io.micronaut:micronaut-aop", version.ref = "micronautAop" }
 reactor = { module = "io.projectreactor:reactor-core", version.ref = "reactor" }
+ulid-kotlin = { module = "com.aallam.ulid:ulid-kotlin", version.ref = "ulidKotlin"}
 
 [plugins]
 allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
