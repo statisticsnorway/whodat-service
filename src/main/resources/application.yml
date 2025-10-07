@@ -2,6 +2,7 @@ micronaut:
   application:
     name: whodat-service
   server:
+    idle-timeout: 50s
     port: 9191
     thread-selection: blocking
   netty:
