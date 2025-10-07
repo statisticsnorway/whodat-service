@@ -1,36 +1,52 @@
 package whodat.filters
 
+import com.nimbusds.jwt.JWTParser
 import io.micronaut.http.*
-import io.micronaut.http.annotation.Filter
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.http.filter.*
+import jakarta.inject.Provider
 import jakarta.inject.Singleton
 import org.reactivestreams.Publisher
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import reactor.util.retry.Retry
-import java.time.*
+import whodat.service.MaskinportenTokenExchanger
 import java.time.Duration
-import java.time.format.DateTimeFormatter
 
 fun retryDelayFrom(ex: HttpClientResponseException): Duration {
     val headers = ex.response.headers
-    val v = headers.getFirst("Retry-After").orElse(null) ?: return Duration.ofSeconds(1)
+    val header =
+        headers
+            .getFirst("Retry-After")
+            .orElse("")
+            .toLong()
 
-    // Either seconds or RFC 1123 date
-    v.toLongOrNull()?.let { return Duration.ofSeconds(it) }
-
-    return try {
-        val until = ZonedDateTime.parse(v, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant()
-        val d = Duration.between(Instant.now(), until)
-        if (d.isNegative) Duration.ofSeconds(1) else d
-    } catch (_: Exception) {
-        Duration.ofSeconds(1)
-    }
+    return Duration.ofSeconds(header)
 }
+
+private fun refreshTokenIfNeededAsync(
+    request: MutableHttpRequest<*>,
+    exchanger: MaskinportenTokenExchanger,
+): Mono<String> =
+    Mono
+        .fromCallable {
+            val current =
+                request.headers
+                    .getFirst(HttpHeaders.AUTHORIZATION)
+                    .orElse("")
+                    .removePrefix("Bearer ")
+            val expMillis =
+                JWTParser
+                    .parse(current)
+                    .jwtClaimsSet.expirationTime.time
+            if (expMillis - System.currentTimeMillis() <= 10_000) exchanger.tokenExchange() else current
+        }.subscribeOn(Schedulers.boundedElastic())
 
 @Singleton
 @RateLimitRetryFilterMatcher
-class RateLimitRetryFilter : HttpClientFilter {
+class RateLimitRetryFilter(
+    val maskinportenTokenExchanger: Provider<MaskinportenTokenExchanger>,
+) : HttpClientFilter {
     private val maxRetries: Long = 5
     private val baseDelay = Duration.ofMillis(500)
 
