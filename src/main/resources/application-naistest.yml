@@ -31,8 +31,8 @@ micronaut:
         read-timeout: 60s
       freg:
         url: https://folkeregisteret-api-konsument.sits.no/
-        read-timeout: 30s
-        connect-timeout: 20s
+        read-timeout: 120s
+        connect-timeout: 100s
 
   security:
     token:
