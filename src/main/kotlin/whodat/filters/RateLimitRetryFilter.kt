@@ -6,41 +6,52 @@ import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.http.filter.*
 import jakarta.inject.Provider
 import jakarta.inject.Singleton
+import kotlinx.coroutines.reactor.mono
 import org.reactivestreams.Publisher
 import reactor.core.publisher.Mono
-import reactor.core.scheduler.Schedulers
 import reactor.util.retry.Retry
 import whodat.service.MaskinportenTokenExchanger
 import java.time.Duration
+import java.util.Optional
 
 fun retryDelayFrom(ex: HttpClientResponseException): Duration {
     val headers = ex.response.headers
-    val header =
+    val header: Long =
         headers
             .getFirst("Retry-After")
-            .orElse("")
-            .toLong()
+            .flatMap { Optional.ofNullable(it.toLongOrNull()) }
+            .orElse(1L)
 
     return Duration.ofSeconds(header)
 }
 
-private fun refreshTokenIfNeededAsync(
+private fun refreshTokenIfNeeded(
     request: MutableHttpRequest<*>,
     exchanger: MaskinportenTokenExchanger,
 ): Mono<String> =
-    Mono
-        .fromCallable {
-            val current =
-                request.headers
-                    .getFirst(HttpHeaders.AUTHORIZATION)
-                    .orElse("")
-                    .removePrefix("Bearer ")
-            val expMillis =
-                JWTParser
-                    .parse(current)
-                    .jwtClaimsSet.expirationTime.time
-            if (expMillis - System.currentTimeMillis() <= 10_000) exchanger.tokenExchange() else current
-        }.subscribeOn(Schedulers.boundedElastic())
+    mono {
+        val current =
+            request.headers
+                .getFirst(HttpHeaders.AUTHORIZATION)
+                .orElse("")
+                .removePrefix("Bearer ")
+        val expMillis =
+            JWTParser
+                .parse(current)
+                .jwtClaimsSet.expirationTime.time
+        if (expMillis - System.currentTimeMillis() <= 10_000) {
+            exchanger.tokenExchange() // suspend, but we’re in a coroutine backed by Reactor, so non-blocking
+        } else {
+            current
+        }
+    }
+
+private fun copyRequest(orig: MutableHttpRequest<*>): MutableHttpRequest<*> {
+    val copy = HttpRequest.create<Any>(orig.method, orig.uri.toString()) // for GET this preserves query params
+    // copy headers
+    orig.headers.forEach { name, values -> values.forEach { copy.header(name, it) } }
+    return copy
+}
 
 @Singleton
 @RateLimitRetryFilterMatcher
@@ -58,10 +69,15 @@ class RateLimitRetryFilter(
 
         return attempt
             .onErrorResume { t ->
-                // If 429 and Retry-After exists, wait once then retry chain manually
                 if (t is HttpClientResponseException && t.status == HttpStatus.TOO_MANY_REQUESTS) {
-                    val delay = retryDelayFrom(t)
-                    Mono.delay(delay).then(Mono.from(chain.proceed(request)))
+                    val retryDelay = retryDelayFrom(t)
+                    refreshTokenIfNeeded(request, maskinportenTokenExchanger.get())
+                        .flatMap { token ->
+                            val newReq = copyRequest(request).bearerAuth(token)
+                            Mono
+                                .delay(retryDelay)
+                                .then(Mono.from(chain.proceed(newReq)))
+                        }
                 } else {
                     Mono.error(t)
                 }
