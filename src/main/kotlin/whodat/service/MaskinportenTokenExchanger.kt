@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 import java.util.Base64
 
 @Singleton
-class MaskinportenTokenExchanger(
+open class MaskinportenTokenExchanger(
     private val cacheManager: CacheManager<String>,
     private val maskinPortenGuardianClient: MaskinportenGuardianClient,
     private val keycloakClient: KeycloakClient,
