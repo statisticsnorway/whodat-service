@@ -5,7 +5,7 @@ import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.QueryValue
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.serde.annotation.Serdeable
-import whodat.filters.AccessTokenFilterMatcher
+import no.ssb.whodat.filters.AccessTokenFilterMatcher
 
 @Client(id = "cloud-identity-service")
 @AccessTokenFilterMatcher
@@ -17,7 +17,6 @@ interface CloudIdentityClient {
      */
     @Get("/groups:lookup?groupKey.id={groupKeyId}")
     suspend fun lookup(groupKeyId: String): LookupResponse
-
 
     /**
      * List all members of a group.
@@ -37,7 +36,7 @@ interface CloudIdentityClient {
 @Serdeable.Deserializable
 data class MembershipResponse(
     val memberships: List<Membership> = listOf(),
-    val nextPageToken: String? = null
+    val nextPageToken: String? = null,
 )
 
 @Introspected

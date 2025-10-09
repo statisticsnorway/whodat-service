@@ -2,7 +2,11 @@ package no.ssb.whodat.filters
 
 import io.micronaut.context.annotation.EachProperty
 import io.micronaut.context.annotation.Parameter
+import io.micronaut.http.annotation.FilterMatcher
 import io.micronaut.serde.annotation.Serdeable
+
+@FilterMatcher
+annotation class AccessTokenFilterMatcher
 
 /**
  * Creates a GoogleAuthServiceConfig for each Service configured under

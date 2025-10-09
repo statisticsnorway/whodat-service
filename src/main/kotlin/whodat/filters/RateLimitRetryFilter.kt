@@ -1,18 +1,30 @@
 package whodat.filters
 
 import com.nimbusds.jwt.JWTParser
-import io.micronaut.http.*
+import io.micronaut.http.HttpHeaders
+import io.micronaut.http.HttpRequest
+import io.micronaut.http.HttpResponse
+import io.micronaut.http.HttpStatus
+import io.micronaut.http.MutableHttpRequest
+import io.micronaut.http.annotation.FilterMatcher
+import io.micronaut.http.client.exceptions.HttpClientException
 import io.micronaut.http.client.exceptions.HttpClientResponseException
-import io.micronaut.http.filter.*
+import io.micronaut.http.filter.ClientFilterChain
+import io.micronaut.http.filter.HttpClientFilter
 import jakarta.inject.Provider
 import jakarta.inject.Singleton
 import kotlinx.coroutines.reactor.mono
 import org.reactivestreams.Publisher
+import org.slf4j.LoggerFactory
 import reactor.core.publisher.Mono
-import reactor.util.retry.Retry
+import reactor.core.scheduler.Schedulers
 import whodat.service.MaskinportenTokenExchanger
+import java.net.SocketException
 import java.time.Duration
 import java.util.Optional
+
+@FilterMatcher
+annotation class RateLimitRetryFilterMatcher
 
 fun retryDelayFrom(ex: HttpClientResponseException): Duration {
     val headers = ex.response.headers
@@ -20,6 +32,7 @@ fun retryDelayFrom(ex: HttpClientResponseException): Duration {
         headers
             .getFirst("Retry-After")
             .flatMap { Optional.ofNullable(it.toLongOrNull()) }
+            .filter { it > 0 }
             .orElse(1L)
 
     return Duration.ofSeconds(header)
@@ -28,68 +41,80 @@ fun retryDelayFrom(ex: HttpClientResponseException): Duration {
 private fun refreshTokenIfNeeded(
     request: MutableHttpRequest<*>,
     exchanger: MaskinportenTokenExchanger,
-): Mono<String> =
-    mono {
-        val current =
-            request.headers
-                .getFirst(HttpHeaders.AUTHORIZATION)
-                .orElse("")
-                .removePrefix("Bearer ")
-        val expMillis =
-            JWTParser
-                .parse(current)
-                .jwtClaimsSet.expirationTime.time
-        if (expMillis - System.currentTimeMillis() <= 10_000) {
-            exchanger.tokenExchange() // suspend, but we’re in a coroutine backed by Reactor, so non-blocking
-        } else {
-            current
+): Mono<String> {
+    val current =
+        request.headers
+            .getFirst(HttpHeaders.AUTHORIZATION)
+            .orElse("")
+            .removePrefix("Bearer ")
+    val expMillis =
+        JWTParser
+            .parse(current)
+            .jwtClaimsSet.expirationTime.time
+    return if (expMillis - System.currentTimeMillis() <= 10_000) {
+        mono {
+            exchanger.getToken("token")
         }
+    } else {
+        Mono.just(current)
     }
+}
 
 private fun copyRequest(orig: MutableHttpRequest<*>): MutableHttpRequest<*> {
-    val copy = HttpRequest.create<Any>(orig.method, orig.uri.toString()) // for GET this preserves query params
-    // copy headers
-    orig.headers.forEach { name, values -> values.forEach { copy.header(name, it) } }
+    val copy = HttpRequest.create<Any>(orig.method, orig.uri.toString())
+    orig.headers.forEach { n, vs -> vs.forEach { copy.header(n, it) } }
     return copy
 }
 
 @Singleton
 @RateLimitRetryFilterMatcher
 class RateLimitRetryFilter(
-    val maskinportenTokenExchanger: Provider<MaskinportenTokenExchanger>,
+    private val maskinportenTokenExchanger: Provider<MaskinportenTokenExchanger>,
 ) : HttpClientFilter {
-    private val maxRetries: Long = 5
-    private val baseDelay = Duration.ofMillis(500)
+    private val log = LoggerFactory.getLogger(RateLimitRetryFilter::class.java)
 
     override fun doFilter(
         request: MutableHttpRequest<*>,
         chain: ClientFilterChain,
     ): Publisher<out HttpResponse<*>> {
-        val attempt = Mono.defer { Mono.from(chain.proceed(request)) }
+        fun attemptOnce(forceFreshConnection: Boolean = false): Mono<HttpResponse<*>> =
+            Mono.defer {
+                val fresh =
+                    copyRequest(request).apply {
+                        if (forceFreshConnection) header(HttpHeaders.CONNECTION, "close")
+                    }
+                Mono.from(chain.proceed(fresh))
+            }
 
-        return attempt
+        return attemptOnce()
             .onErrorResume { t ->
-                if (t is HttpClientResponseException && t.status == HttpStatus.TOO_MANY_REQUESTS) {
-                    val retryDelay = retryDelayFrom(t)
-                    refreshTokenIfNeeded(request, maskinportenTokenExchanger.get())
-                        .flatMap { token ->
-                            val newReq = copyRequest(request).bearerAuth(token)
-                            Mono
-                                .delay(retryDelay)
-                                .then(Mono.from(chain.proceed(newReq)))
-                        }
-                } else {
-                    Mono.error(t)
+                when {
+                    // 429: honor Retry-After and retry with a fresh connection
+                    t is HttpClientResponseException && t.status == HttpStatus.TOO_MANY_REQUESTS -> {
+                        val delay = retryDelayFrom(t)
+                        log.info("429 Encountered, delaying ${delay.seconds} seconds")
+
+                        refreshTokenIfNeeded(request, maskinportenTokenExchanger.get())
+                            .flatMap { token ->
+                                val newReq =
+                                    copyRequest(request)
+                                        .bearerAuth(token)
+                                        .header(HttpHeaders.CONNECTION, "close") // force new socket after 429
+                                Mono
+                                    .delay(delay, Schedulers.boundedElastic())
+                                    .then(Mono.from(chain.proceed(newReq)))
+                            }
+                    }
+
+                    // Tiny “retry once on reset”: treat low-level SocketException as transient
+                    t is HttpClientException && t.cause is SocketException -> {
+                        Mono
+                            .delay(Duration.ofMillis(150), Schedulers.boundedElastic())
+                            .then(attemptOnce(forceFreshConnection = true))
+                    }
+
+                    else -> Mono.error(t)
                 }
-            }.retryWhen(
-                Retry
-                    .backoff(maxRetries, baseDelay)
-                    .jitter(0.5)
-                    .filter { t ->
-                        t is HttpClientResponseException && t.status == HttpStatus.TOO_MANY_REQUESTS
-                    },
-            ).onErrorResume { t ->
-                Mono.error(t)
             }
     }
 }

@@ -12,7 +12,6 @@ import io.micronaut.inject.qualifiers.Qualifiers
 import jakarta.inject.Singleton
 import org.reactivestreams.Publisher
 import org.slf4j.LoggerFactory
-import whodat.filters.AccessTokenFilterMatcher
 import java.io.FileInputStream
 import kotlin.jvm.optionals.getOrNull
 

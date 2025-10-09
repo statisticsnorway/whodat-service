@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.micronaut.http.HttpHeaders.ACCEPT
 import io.micronaut.http.HttpHeaders.CONTENT_TYPE
 import io.micronaut.http.HttpHeaders.USER_AGENT
+import io.micronaut.http.MediaType.APPLICATION_JSON
 import io.micronaut.http.MediaType.TEXT_PLAIN
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Consumes
@@ -16,6 +17,7 @@ import io.micronaut.http.annotation.QueryValue
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.serde.annotation.Serdeable
 import jakarta.validation.constraints.NotNull
+import whodat.filters.ClientProgressFilterMatcher
 import whodat.filters.RateLimitRetryFilterMatcher
 
 @Serdeable
@@ -65,15 +67,12 @@ data class FregClientResponse(
     val foedselsEllerDNummer: List<String>,
 )
 
-@RateLimitRetryFilterMatcher
+@ClientProgressFilterMatcher
+// @RateLimitRetryFilterMatcher // Uncomment to view RPS
 @Client(id = "freg")
 interface FregClient {
     @Get("/folkeregisteret/offentlig-med-hjemmel/api/v1/personer/soek{?request*}")
-    @Headers(
-        Header(name = CONTENT_TYPE, value = "application/json"),
-        Header(name = ACCEPT, value = "application/json"),
-    )
-    @Consumes(TEXT_PLAIN)
+    @Consumes(APPLICATION_JSON)
     suspend fun searchFnr(
         @Header authorization: String,
         @QueryValue request: FregClientRequest,

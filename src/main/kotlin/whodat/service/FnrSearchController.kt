@@ -18,6 +18,7 @@ import whodat.security.WhodatServiceRole
 import whodat.service.MaskinportenGuardianClient
 import whodat.service.MaskinportenTokenExchanger
 import java.util.Base64
+import kotlin.random.Random
 import kotlin.reflect.full.memberProperties
 
 @Serdeable
@@ -66,13 +67,16 @@ open class FnrSearchController(
             val requestSemaphore = Semaphore(1000)
 
             val futures =
-                request.whodatVariables.map {
+                request.whodatVariables.mapIndexed { i, variable ->
                     async {
                         requestSemaphore.withPermit {
-                            val maskinPortenToken = maskinportenTokenExchanger.tokenExchange()
+                            // Jitter in order to avoid stampeding FREG service
+                            delay(Random.nextLong(0, 10))
+
+                            val token = maskinportenTokenExchanger.getToken("token")
                             fregClient.searchFnr(
-                                "Bearer $maskinPortenToken",
-                                FregClientRequest.from(it, request.whodatModifiers),
+                                "Bearer $token",
+                                FregClientRequest.from(variable, request.whodatModifiers),
                             )
                         }
                     }

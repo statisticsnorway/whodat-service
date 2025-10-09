@@ -2,9 +2,14 @@ micronaut:
   application:
     name: whodat-service
   server:
-    idle-timeout: 50s
+    idle-timeout: 360s
     port: 9191
-    thread-selection: blocking
+  netty:
+    event-loops:
+      default:
+      http-client:
+        num-threads: 100
+        prefer-native-transport: true
   router:
     static-resources:
       swagger:
