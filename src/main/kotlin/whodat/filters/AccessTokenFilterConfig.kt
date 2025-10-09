@@ -28,8 +28,5 @@ data class AccessTokenFilterConfig(
     }
 
     // Replace audience with scopes
-    var scopes: List<String> =
-        listOf(
-            "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
-        )
+    var scopes: List<String>? = null
 }

@@ -10,7 +10,7 @@ import io.micronaut.http.annotation.ResponseFilter
 import io.micronaut.http.annotation.ServerFilter
 import org.slf4j.MDC
 import ulid.ULID
-import java.util.*
+import java.util.Optional
 
 @ServerFilter(Filter.MATCH_ALL_PATTERN)
 class CorrelationIdFilter {
