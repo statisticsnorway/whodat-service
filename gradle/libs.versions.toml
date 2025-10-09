@@ -4,6 +4,7 @@
 # Each block is sorted alphabetically.
 
 [versions]
+caffeineCache = "3.2.2"
 cyclonedx = "2.3.1"
 gradleShadow = "8.3.6"
 jackson = "2.19.2"
@@ -32,6 +33,7 @@ ulidKotlin = "1.5.0"
 
 
 [libraries]
+caffeine-cache = {module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeineCache"}
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }

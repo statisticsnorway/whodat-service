@@ -8,8 +8,8 @@ metadata:
     team: {{team}}
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "6G"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "420"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "420"
 spec:
   image: "{{ image }}"  # Injected from the GitHub Action
   port: 9191

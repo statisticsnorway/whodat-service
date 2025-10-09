@@ -25,8 +25,13 @@ micronaut:
         read-timeout: 60s
       freg:
         url: https://folkeregisteret-api-konsument.sits.no/
-        read-timeout: 120s
-        connect-timeout: 100s
+        http-version: HTTP_1_1
+        read-timeout: 180s
+        connect-ttl: 200s
+        pool:
+          enabled: false # TODO: Enable connection pool to increase throughput.
+                         # Errors when restarting connections after a 429 in RateLimitRetryFilter
+        event-loop-group: http-client
 
   security:
     token:

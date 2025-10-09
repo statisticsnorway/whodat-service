@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.reactor)
     implementation(libs.snakeyaml)
     implementation(libs.ulid.kotlin)
+    implementation(libs.caffeine.cache)
     annotationProcessor(libs.micronaut.security.annotations)
     compileOnly(libs.micronaut.http.client)
     runtimeOnly(libs.logback.classic)
