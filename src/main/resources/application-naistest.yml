@@ -6,12 +6,6 @@ keycloak:
   keycloak-url: auth.test.ssb.no
 
 micronaut:
-  netty:
-    event-loops:
-      default:
-        loom-carrier: true
-      http-client:
-        loom-carrier: true
   http:
     client:
       pool:
@@ -70,4 +64,4 @@ app-roles:
     - 'https://auth.test.ssb.no/realms/ssb/protocol/openid-connect/certs'
   user-group-names:
     - 'whodat-service-m2m-t@ssb.no'
-    - 'whodat-service-user@ssb.no'
+    - 'whodat-service-user-t@ssb.no'

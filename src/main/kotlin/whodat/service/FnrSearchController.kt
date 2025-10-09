@@ -67,7 +67,7 @@ open class FnrSearchController(
             val requestSemaphore = Semaphore(1000)
 
             val futures =
-                request.whodatVariables.mapIndexed { i, variable ->
+                request.whodatVariables.map { variable ->
                     async {
                         requestSemaphore.withPermit {
                             // Jitter in order to avoid stampeding FREG service
