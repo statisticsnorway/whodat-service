@@ -67,8 +67,8 @@ data class FregClientResponse(
     val foedselsEllerDNummer: List<String>,
 )
 
-@ClientProgressFilterMatcher
-// @RateLimitRetryFilterMatcher // Uncomment to view RPS
+// @ClientProgressFilterMatcher // Uncomment to view RPS
+@RateLimitRetryFilterMatcher
 @Client(id = "freg")
 interface FregClient {
     @Get("/folkeregisteret/offentlig-med-hjemmel/api/v1/personer/soek{?request*}")
