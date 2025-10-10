@@ -5,4 +5,4 @@ micronaut:
     project-id: keycloak-clients-t-ke
 
 gcp:
-  project-id: 'dapla-stat-t-53'
+  project-id: ${DAPLA_STAT_PROJECT_ID}
