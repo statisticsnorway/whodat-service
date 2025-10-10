@@ -2,7 +2,7 @@ micronaut:
   gcp:
     secret-manager:
       location: europe-north1
-    project-id: keycloak-clients-t-ke
+    project-id: ${GCP_KEYCLOAK_CLIENTS_PROJECT_ID}
 
 gcp:
   project-id: ${DAPLA_STAT_PROJECT_ID}
