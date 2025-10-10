@@ -6,13 +6,18 @@ metadata:
   namespace: {{team}}
   labels:
     team: {{team}}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "6G"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "420"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "420"
+    nginx.ingress.kubernetes.io/keepalive: "480"
+    nginx.ingress.kubernetes.io/keepalive-timeout: "390"
 spec:
   image: "{{ image }}"  # Injected from the GitHub Action
   port: 9191
 
   ingresses:
     - https://whodat-service.intern.test.ssb.no
-    - https://whodat-service.test.ssb.no
 
   accessPolicy:
     outbound:
@@ -47,7 +52,7 @@ spec:
   prometheus:
     enabled: true
     path: /prometheus
-    port: "9191"
+    port: "11100"
 
   liveness:
     path: /health/liveness

@@ -2,7 +2,11 @@ package no.ssb.whodat.filters
 
 import io.micronaut.context.annotation.EachProperty
 import io.micronaut.context.annotation.Parameter
+import io.micronaut.http.annotation.FilterMatcher
 import io.micronaut.serde.annotation.Serdeable
+
+@FilterMatcher
+annotation class AccessTokenFilterMatcher
 
 /**
  * Creates a GoogleAuthServiceConfig for each Service configured under
@@ -23,5 +27,6 @@ data class AccessTokenFilterConfig(
         const val PREFIX = "gcp.http.client.filter.services"
     }
 
+    // Replace audience with scopes
     var scopes: List<String>? = null
 }

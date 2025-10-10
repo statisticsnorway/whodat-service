@@ -12,7 +12,6 @@ import io.micronaut.security.token.config.TokenConfiguration
 import jakarta.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import org.reactivestreams.Publisher
 import org.slf4j.LoggerFactory
 import whodat.accessgroups.CloudIdentityService
 import whodat.accessgroups.Membership
