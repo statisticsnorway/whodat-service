@@ -1,22 +1,16 @@
 package no.ssb.whodat.service
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import io.micronaut.http.HttpHeaders.ACCEPT
-import io.micronaut.http.HttpHeaders.CONTENT_TYPE
-import io.micronaut.http.HttpHeaders.USER_AGENT
+import io.micronaut.context.annotation.Replaces
 import io.micronaut.http.MediaType.APPLICATION_JSON
-import io.micronaut.http.MediaType.TEXT_PLAIN
-import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Consumes
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.Header
-import io.micronaut.http.annotation.Headers
-import io.micronaut.http.annotation.PathVariable
-import io.micronaut.http.annotation.Post
 import io.micronaut.http.annotation.QueryValue
 import io.micronaut.http.client.annotation.Client
+import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.serde.annotation.Serdeable
-import jakarta.validation.constraints.NotNull
+import jakarta.inject.Singleton
+import whodat.exceptions.FregUpstreamException
 import whodat.filters.ClientProgressFilterMatcher
 import whodat.filters.RateLimitRetryFilterMatcher
 
@@ -67,14 +61,25 @@ data class FregClientResponse(
     val foedselsEllerDNummer: List<String>,
 )
 
-// @ClientProgressFilterMatcher // Uncomment to view RPS
+@ClientProgressFilterMatcher // Uncomment to view RPS
 @RateLimitRetryFilterMatcher
 @Client(id = "freg")
 interface FregClient {
     @Get("/folkeregisteret/offentlig-med-hjemmel/api/v1/personer/soek{?request*}")
     @Consumes(APPLICATION_JSON)
-    suspend fun searchFnr(
+    suspend fun searchFnrInternal(
         @Header authorization: String,
         @QueryValue request: FregClientRequest,
     ): FregClientResponse
+
+    suspend fun searchFnr(
+        auth: String,
+        req: FregClientRequest,
+        rowIndex: Int,
+    ): FregClientResponse =
+        try {
+            searchFnrInternal(auth, req)
+        } catch (e: HttpClientResponseException) {
+            throw FregUpstreamException(e, rowIndex)
+        }
 }
