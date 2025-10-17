@@ -1,4 +1,5 @@
 import com.google.devtools.ksp.KspExperimental
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.jvm)
@@ -186,4 +187,9 @@ tasks.register("versionPatch") {
     doLast {
         bumpVersion("patch")
     }
+}
+
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.compilerOptions {
+    freeCompilerArgs.set(listOf("-Xmulti-dollar-interpolation"))
 }

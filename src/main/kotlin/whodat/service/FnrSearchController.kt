@@ -67,16 +67,18 @@ open class FnrSearchController(
             val requestSemaphore = Semaphore(1000)
 
             val futures =
-                request.whodatVariables.map { variable ->
+                request.whodatVariables.mapIndexed { rowIndex, variable ->
                     async {
                         requestSemaphore.withPermit {
                             // Jitter in order to avoid stampeding FREG service
                             delay(Random.nextLong(0, 10))
 
                             val token = maskinportenTokenExchanger.getToken("token")
+
                             fregClient.searchFnr(
                                 "Bearer $token",
                                 FregClientRequest.from(variable, request.whodatModifiers),
+                                rowIndex,
                             )
                         }
                     }
