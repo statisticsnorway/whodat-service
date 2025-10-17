@@ -52,7 +52,7 @@ spec:
   prometheus:
     enabled: true
     path: /prometheus
-    port: "9191"
+    port: "11100"
 
   liveness:
     path: /health/liveness

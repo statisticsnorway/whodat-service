@@ -16,7 +16,7 @@ import java.util.Base64
 import java.util.concurrent.Executor
 
 @Singleton
-open class MaskinportenTokenExchanger(
+class MaskinportenTokenExchanger(
     private val maskinPortenGuardianClient: MaskinportenGuardianClient,
     private val keycloakClient: KeycloakClient,
     private val gcpSecretManagerClient: GCPSecretManagerClient,
@@ -49,7 +49,7 @@ open class MaskinportenTokenExchanger(
 
       This method should NOT be accessed directly, but through the cache
      */
-    suspend fun tokenExchange(
+    private suspend fun tokenExchange(
         @Suppress("UNUSED_PARAMETER") key: String,
     ): String =
         coroutineScope {
