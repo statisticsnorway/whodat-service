@@ -61,7 +61,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           java-version: 21
-          distribution: 'zulu'
+          distribution: "zulu"
 
       - name: Set up gradle
         uses: gradle/actions/setup-gradle@v4
@@ -79,7 +79,7 @@ jobs:
           echo "DOCKER_IMAGE_DIGEST=$(cat build/jib-image.digest)" >> $GITHUB_ENV
 
       - name: "Attest and sign"
-        uses: 'nais/attest-sign@v1.5.18'
+        uses: "nais/attest-sign@v1.5.18"
         with:
           image_ref: ${{ env.DOCKER_IMAGE_WITHOUT_TAG }}@${{ env.DOCKER_IMAGE_DIGEST }}
           # This SBOM includes all JVM dependencies (generated with cyclonedxBom) but does
@@ -95,10 +95,33 @@ jobs:
       id-token: "write"
     needs: docker-build
     steps:
-      - uses: actions/checkout@v5  # Needed for access to manifests
+      - uses: actions/checkout@v5 # Needed for access to manifests
+
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.DAPLA_BOT_APP_ID }}
+          private-key: ${{ secrets.DAPLA_BOT_PRIVATE_KEY }}
+          owner: statisticsnorway
+          repositories: dapla-pseudo-iac
+
+      - uses: actions/checkout@v5
+        name: Retrieve protected configuration
+        with:
+          repository: "statisticsnorway/dapla-stat-iac"
+          path: "ext-config"
+          token: ${{ steps.app-token.outputs.token }}
+          sparse-checkout: |
+            apps/nais/whodat-service/${{ needs.docker-build.outputs.nais_cluster }}
+
+      - name: Configure environment variables
+        run: |
+          ext_config_dir="ext-config/apps/nais/whodat-service/${{ inputs.cluster }}"
+          echo "ext_config=${ext_config_dir}" >> $GITHUB_ENV
+
       - uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: ${{ needs.docker-build.outputs.nais_cluster }}
-          RESOURCE: ${{ needs.docker-build.outputs.nais_config_path }}
+          RESOURCE: ${{ needs.docker-build.outputs.nais_config_path }},${{ env.ext_config }}/app-roles.yml
           VAR: image=${{ env.DOCKER_IMAGE }},team=dapla-stat
           DEPLOY_SERVER: deploy.ssb.cloud.nais.io:443
