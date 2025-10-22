@@ -1,11 +1,9 @@
 name: Image Build and Deploy
 
 on:
-  release:
-    types: [published]
   push:
     branches:
-      - main
+      - develop
   workflow_dispatch:
     inputs:
       cluster:
