@@ -117,7 +117,7 @@ jobs:
 
       - name: Configure environment variables
         run: |
-          ext_config_dir="ext-config/apps/nais/whodat-service/${{ inputs.cluster }}"
+          ext_config_dir="ext-config/apps/nais/whodat-service/${{ needs.docker-build.outputs.nais_cluster }}"
           echo "ext_config=${ext_config_dir}" >> $GITHUB_ENV
 
       - uses: nais/deploy/actions/deploy@v2
