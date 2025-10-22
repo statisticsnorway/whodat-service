@@ -103,7 +103,7 @@ jobs:
           app-id: ${{ secrets.DAPLA_BOT_APP_ID }}
           private-key: ${{ secrets.DAPLA_BOT_PRIVATE_KEY }}
           owner: statisticsnorway
-          repositories: dapla-pseudo-iac
+          repositories: dapla-stat-iac
 
       - uses: actions/checkout@v5
         name: Retrieve protected configuration
