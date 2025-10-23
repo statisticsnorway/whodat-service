@@ -3,9 +3,9 @@ apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
   name: whodat-service-develop
-  namespace: {{team}}
+  namespace: { { team } }
   labels:
-    team: {{team}}
+    team: { { team } }
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "6G"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "420"
@@ -13,7 +13,7 @@ metadata:
     nginx.ingress.kubernetes.io/keepalive: "480"
     nginx.ingress.kubernetes.io/keepalive-timeout: "390"
 spec:
-  image: "{{ image }}"  # Injected from the GitHub Action
+  image: "{{ image }}" # Injected from the GitHub Action
   port: 9191
 
   ingresses:
@@ -33,11 +33,17 @@ spec:
         - host: "folkeregisteret-api-konsument.sits.no"
 
   env:
+    - name: MICRONAUT_CONFIG_FILES
+      value: /conf/protected/app-roles.yml
     - name: MICRONAUT_ENVIRONMENTS
       value: naistest
-  
+
   envFrom:
     - secret: whodat
+
+  filesFrom:
+    - configmap: whodat-roles-test-configmap
+      mountPath: /conf/protected
 
   replicas:
     min: 1
@@ -57,12 +63,12 @@ spec:
   liveness:
     path: /health/liveness
     port: 11100
-    timeout: 5       # seconds
+    timeout: 5 # seconds
     initialDelay: 45 # seconds
   readiness:
     path: /health/readiness
     port: 11100
-    timeout: 5       # seconds
+    timeout: 5 # seconds
     initialDelay: 45 # seconds
   startup:
     path: /health/liveness
