@@ -40,7 +40,7 @@ spec:
     - secret: whodat
 
   filesFrom:
-    - configmap: whodat-roles-test-configmap
+    - configmap: whodat-roles-prod-configmap
       mountPath: /conf/protected
 
   replicas:
