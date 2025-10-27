@@ -133,6 +133,7 @@ tasks.withType<Jar> {
 }
 
 tasks.register<JavaExec>("runLocal") {
+    environment("WHODAT_M2M_GROUP_PROD", "dummy-group@ssb.no")
     mainClass.set("no.ssb.whodat.ApplicationKt")
     classpath = sourceSets.main.get().runtimeClasspath
     jvmArgs = listOf("-Dmicronaut.environments=local", "--add-opens", "java.base/java.lang=ALL-UNNAMED")

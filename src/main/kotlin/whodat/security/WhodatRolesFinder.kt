@@ -4,8 +4,6 @@ import com.nimbusds.jwt.JWTClaimNames
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.annotation.ConfigurationProperties
 import io.micronaut.context.annotation.Replaces
-import io.micronaut.scheduling.TaskExecutors
-import io.micronaut.scheduling.annotation.ExecuteOn
 import io.micronaut.security.token.DefaultRolesFinder
 import io.micronaut.security.token.RolesFinder
 import io.micronaut.security.token.config.TokenConfiguration
@@ -14,7 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import whodat.accessgroups.CloudIdentityService
-import whodat.accessgroups.Membership
 
 @ConfigurationProperties("app-roles")
 data class StaticRolesConfig(
@@ -55,8 +52,12 @@ class WhodatRolesFinder(
             rolesConfig.userGroupNames?.forEach { group ->
                 val groupMembers = cloudIdentityService.listMembers(group)
                 val userIsGroupMember = groupMembers.any { it.preferredMemberKey?.id == email }
+                val m2mProdAccessGroup: String = System.getenv("WHODAT_M2M_GROUP_PROD") ?: run {
+                    log.error("WHODAT_M2M_GROUP_PROD environment variable not found")
+                    throw RuntimeException("WHODAT_M2M_GROUP_PROD environment variable not found")
+                }
                 when {
-                    group == "whodat-service-m2m-p@ssb.no" && userIsGroupMember ->
+                    group == m2mProdAccessGroup && userIsGroupMember ->
                         roles.add(WhodatServiceRole.USER)
                     activeEnvironments.contains("naisprod") && trustedIssuer && userIsGroupMember ->
                         roles.add(WhodatServiceRole.USER)
