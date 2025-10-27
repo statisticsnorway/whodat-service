@@ -15,7 +15,7 @@ micronaut:
     services:
       cloud-identity-service:
         url: https://cloudidentity.googleapis.com
-        path: '/v1'
+        path: "/v1"
         read-timeout: 60s
       keycloak:
         url: https://auth.ssb.no/
@@ -29,8 +29,9 @@ micronaut:
         read-timeout: 180s
         connect-ttl: 200s
         pool:
-          enabled: false # TODO: Enable connection pool to increase throughput.
-                         # Errors when restarting connections after a 429 in RateLimitRetryFilter
+          enabled:
+            false # TODO: Enable connection pool to increase throughput.
+            # Errors when restarting connections after a 429 in RateLimitRetryFilter
         event-loop-group: http-client
 
   caches:
@@ -43,11 +44,11 @@ micronaut:
         signatures:
           jwks:
             keycloak-nais-prod:
-              url: 'https://auth.ssb.no/realms/ssb/protocol/openid-connect/certs'
+              url: "https://auth.ssb.no/realms/ssb/protocol/openid-connect/certs"
             lab-id-north1-prod:
-              url: 'https://labid.lab.dapla-external.ssb.no/jwks'
+              url: "https://labid.lab.dapla-external.ssb.no/jwks"
             google:
-              url: 'https://www.googleapis.com/oauth2/v3/certs'
+              url: "https://www.googleapis.com/oauth2/v3/certs"
 
 gcp:
   http:
@@ -58,11 +59,3 @@ gcp:
           cloud-identity-service:
             scopes:
               - "https://www.googleapis.com/auth/cloud-identity.groups.readonly"
-
-app-roles:
-  trusted-issuers:
-    - 'https://labid.lab.dapla-external.ssb.no'
-    - 'https://auth.ssb.no/realms/ssb/protocol/openid-connect/certs'
-  user-group-names:
-    - 'whodat-service-m2m-p@ssb.no'
-    - 'whodat-service-user-p@ssb.no'
