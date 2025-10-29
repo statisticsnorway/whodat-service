@@ -61,7 +61,7 @@ data class FregClientResponse(
     val foedselsEllerDNummer: List<String>,
 )
 
-@ClientProgressFilterMatcher // Uncomment to view RPS
+// @ClientProgressFilterMatcher // Uncomment to view RPS
 @RateLimitRetryFilterMatcher
 @Client(id = "freg")
 interface FregClient {
