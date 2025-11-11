@@ -15,6 +15,7 @@ metadata:
 spec:
   image: "{{ image }}" # Injected from the GitHub Action
   port: 9191
+  terminationGracePeriodSeconds: 180
 
   ingresses:
     - https://whodat-service-develop.intern.test.ssb.no
