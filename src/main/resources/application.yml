@@ -31,6 +31,10 @@ micronaut:
           swagger-ui.enabled=true,
           swagger-ui.js.url=/swagger-ui/res/,
           swagger-ui.tagsSorter=Function=(a => a),
+  lifecycle:
+    graceful-shutdown:
+      enabled: true
+      grace-period: 120s
   security:
     enabled: true
     intercept-url-map:
