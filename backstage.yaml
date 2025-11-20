@@ -2,10 +2,10 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: whodat-service
-  title: Service for amending national identity numbers
+  title: Whodat Service
   description: |
-    This repo contains the code for the whodat service which is used
-    to valid matches for invalid national identity numbers.
+    This repo contains the code for the 'whodat' service which is used
+    to amend matches for invalid national identity numbers.
   tags:
     - kotlin
     - micronaut
