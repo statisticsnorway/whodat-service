@@ -43,12 +43,16 @@ dependencies {
     implementation(libs.snakeyaml)
     implementation(libs.ulid.kotlin)
     implementation(libs.caffeine.cache)
+    implementation("io.micronaut:micronaut-retry")
     annotationProcessor(libs.micronaut.security.annotations)
     compileOnly(libs.micronaut.http.client)
     runtimeOnly(libs.logback.classic)
     runtimeOnly(libs.jackson.module.kotlin)
     runtimeOnly(libs.micronaut.cache.caffeine)
     testImplementation(libs.micronaut.http.client)
+    testImplementation("io.micronaut.test:micronaut-test-junit5")
+    testImplementation("io.mockk:mockk:1.13.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
 application {
@@ -56,6 +60,9 @@ application {
 }
 java {
     sourceCompatibility = JavaVersion.toVersion("21")
+}
+kotlin {
+    jvmToolchain(21)
 }
 
 graalvmNative.toolchainDetection = false
