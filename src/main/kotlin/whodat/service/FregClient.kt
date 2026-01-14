@@ -1,6 +1,5 @@
 package no.ssb.whodat.service
 
-import io.micronaut.context.annotation.Replaces
 import io.micronaut.http.MediaType.APPLICATION_JSON
 import io.micronaut.http.annotation.Consumes
 import io.micronaut.http.annotation.Get
@@ -8,11 +7,18 @@ import io.micronaut.http.annotation.Header
 import io.micronaut.http.annotation.QueryValue
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.http.client.exceptions.HttpClientResponseException
+import io.micronaut.retry.annotation.RetryPredicate
 import io.micronaut.serde.annotation.Serdeable
+import io.micronaut.retry.annotation.Retryable
 import jakarta.inject.Singleton
+import no.ssb.whodat.service.WhodatModifiers
+import no.ssb.whodat.service.WhodatVariables
+import org.slf4j.LoggerFactory
 import whodat.exceptions.FregUpstreamException
-import whodat.filters.ClientProgressFilterMatcher
+
 import whodat.filters.RateLimitRetryFilterMatcher
+import java.net.ConnectException
+import java.net.SocketTimeoutException
 
 @Serdeable
 data class FregClientRequest(
@@ -67,6 +73,7 @@ data class FregClientResponse(
 interface FregClient {
     @Get("/folkeregisteret/offentlig-med-hjemmel/api/v1/personer/soek{?request*}")
     @Consumes(APPLICATION_JSON)
+    @Retryable(predicate = FregRetryPredicate::class, attempts = "5", delay = "2s")
     suspend fun searchFnrInternal(
         @Header authorization: String,
         @QueryValue request: FregClientRequest,
@@ -76,10 +83,34 @@ interface FregClient {
         auth: String,
         req: FregClientRequest,
         rowIndex: Int,
-    ): FregClientResponse =
+        refreshAuth: suspend () -> String
+    ): FregClientResponse {
         try {
-            searchFnrInternal(auth, req)
+                val newAuth = refreshAuth()
+                return searchFnrInternal(newAuth, req)
         } catch (e: HttpClientResponseException) {
             throw FregUpstreamException(e, rowIndex)
         }
+    }
+}
+
+@Singleton
+class FregRetryPredicate : RetryPredicate {
+
+    private val logger = LoggerFactory.getLogger(FregRetryPredicate::class.java)
+
+    override fun test(exception: Throwable): Boolean {
+        val retryable = isRetryable(exception)
+        logger.info("Retry check for exception: {}. Retryable: {}", exception::class.simpleName, retryable)
+        return retryable
+    }
+
+    // Helper method to determine if an exception is retryable
+    private fun isRetryable(exception: Throwable): Boolean {
+        return when (exception) {
+            is HttpClientResponseException -> exception.status.code in 500..599 // Retry for 5xx errors
+            is SocketTimeoutException, is ConnectException -> true
+            else -> false
+        }
+    }
 }

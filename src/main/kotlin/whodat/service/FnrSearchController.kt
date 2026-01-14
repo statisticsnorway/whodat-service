@@ -79,6 +79,7 @@ open class FnrSearchController(
                                 "Bearer $token",
                                 FregClientRequest.from(variable, request.whodatModifiers),
                                 rowIndex,
+                                refreshAuth = {"Bearer ${maskinportenTokenExchanger.getToken("token")}"}
                             )
                         }
                     }
