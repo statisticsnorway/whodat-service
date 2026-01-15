@@ -76,10 +76,9 @@ open class FnrSearchController(
                             val token = maskinportenTokenExchanger.getToken("token")
 
                             fregClient.searchFnr(
-                                "Bearer $token",
                                 FregClientRequest.from(variable, request.whodatModifiers),
                                 rowIndex,
-                                refreshAuth = {"Bearer ${maskinportenTokenExchanger.getToken("token")}"}
+                                fetchToken = {"Bearer ${maskinportenTokenExchanger.getToken("token")}"}
                             )
                         }
                     }

@@ -30,6 +30,10 @@ micronautValidation = "4.10.0"
 snakeyaml = "2.4"
 reactor = "3.7.12"
 ulidKotlin = "1.5.0"
+mockk="1.13.2"
+micronautRetry="4.10.3"
+mockwebserver="4.12.0"
+kotlinxCoroutinesTest="1.8.1"
 
 
 [libraries]
@@ -57,8 +61,13 @@ micronaut-gcp-secret-manager = { module = "io.micronaut.gcp:micronaut-gcp-secret
 micronaut-cache-core = { module = "io.micronaut.cache:micronaut-cache-core", version.ref = "micronautCache" }
 micronaut-cache-caffeine = { module = "io.micronaut.cache:micronaut-cache-caffeine", version.ref = "micronautCache" }
 micronaut-aop = { module = "io.micronaut:micronaut-aop", version.ref = "micronautAop" }
+micronaut-retry = { module = "io.micronaut:micronaut-retry", version.ref = "micronautRetry" }
 reactor = { module = "io.projectreactor:reactor-core", version.ref = "reactor" }
-ulid-kotlin = { module = "com.aallam.ulid:ulid-kotlin", version.ref = "ulidKotlin"}
+ulid-kotlin = { module = "com.aallam.ulid:ulid-kotlin", version.ref = "ulidKotlin" }
+mockk = { module = "io.mockk:mockk", version = "mockk" }
+mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "mockwebserver" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+
 
 [plugins]
 allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }

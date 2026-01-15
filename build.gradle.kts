@@ -39,20 +39,24 @@ dependencies {
     implementation(libs.micronaut.http.client)
     implementation(libs.micronaut.gcp.common)
     implementation(libs.micronaut.gcp.secret.manager)
+    implementation(libs.micronaut.retry)
     implementation(libs.reactor)
     implementation(libs.snakeyaml)
     implementation(libs.ulid.kotlin)
     implementation(libs.caffeine.cache)
-    implementation("io.micronaut:micronaut-retry")
     annotationProcessor(libs.micronaut.security.annotations)
     compileOnly(libs.micronaut.http.client)
     runtimeOnly(libs.logback.classic)
     runtimeOnly(libs.jackson.module.kotlin)
     runtimeOnly(libs.micronaut.cache.caffeine)
     testImplementation(libs.micronaut.http.client)
-    testImplementation("io.micronaut.test:micronaut-test-junit5")
-    testImplementation("io.mockk:mockk:1.13.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockwebserver)
+    testImplementation(libs.kotlinx.coroutines.test)
+
+
+
+
 }
 
 application {

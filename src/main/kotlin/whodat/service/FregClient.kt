@@ -80,14 +80,13 @@ interface FregClient {
     ): FregClientResponse
 
     suspend fun searchFnr(
-        auth: String,
         req: FregClientRequest,
         rowIndex: Int,
-        refreshAuth: suspend () -> String
+        fetchToken: suspend () -> String
     ): FregClientResponse {
         try {
-                val newAuth = refreshAuth()
-                return searchFnrInternal(newAuth, req)
+                val token = fetchToken()
+                return searchFnrInternal(token, req)
         } catch (e: HttpClientResponseException) {
             throw FregUpstreamException(e, rowIndex)
         }
@@ -107,8 +106,12 @@ class FregRetryPredicate : RetryPredicate {
 
     // Helper method to determine if an exception is retryable
     private fun isRetryable(exception: Throwable): Boolean {
+        val retryStatusCodes: Set<Int> = buildSet {
+            addAll(500..599)
+            add(401)
+        }
         return when (exception) {
-            is HttpClientResponseException -> exception.status.code in 500..599 // Retry for 5xx errors
+            is HttpClientResponseException -> exception.status.code in retryStatusCodes
             is SocketTimeoutException, is ConnectException -> true
             else -> false
         }
