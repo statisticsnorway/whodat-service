@@ -11,7 +11,7 @@ The whodat-service is built using the Kotlin language and the Micronaut REST API
 
 Micronaut uses Netty under the hood which is based on an event loop model. For whodat-service we've
 configured two seperate event loops. One default event loop where controller requests and middleware are processed
-and a separate event loop for http clients. Furthermore we use [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) for asyncronous calls which. This is supported through the micronaut kotlin runtime which ensures that control is yielded back to the netty event loop when a function is suspended. It's important to ensure that event loops aren't blocked. If you need
+and a separate event loop for http clients. Furthermore we use [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) for asyncronous calls. This is supported through the micronaut kotlin runtime which ensures that control is yielded back to the netty event loop when a function is suspended. It's important to ensure that event loops aren't blocked. If you need
 to make blocking calls dispatch the work to a separate thread using the [`@ExecutesOn(TaskExecutors.IO)`](https://docs.micronaut.io/latest/api/io/micronaut/scheduling/annotation/ExecuteOn.html) annotation. Lastly, if you need to bridge a blocking function with suspendable functions use [`runBlocking`](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/run-blocking.html).
 
 ## Request flow
