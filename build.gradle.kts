@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.micronaut.http.client)
     implementation(libs.micronaut.gcp.common)
     implementation(libs.micronaut.gcp.secret.manager)
+    implementation(libs.micronaut.retry)
     implementation(libs.reactor)
     implementation(libs.snakeyaml)
     implementation(libs.ulid.kotlin)
@@ -49,6 +50,13 @@ dependencies {
     runtimeOnly(libs.jackson.module.kotlin)
     runtimeOnly(libs.micronaut.cache.caffeine)
     testImplementation(libs.micronaut.http.client)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockwebserver)
+    testImplementation(libs.kotlinx.coroutines.test)
+
+
+
+
 }
 
 application {
@@ -56,6 +64,9 @@ application {
 }
 java {
     sourceCompatibility = JavaVersion.toVersion("21")
+}
+kotlin {
+    jvmToolchain(21)
 }
 
 graalvmNative.toolchainDetection = false

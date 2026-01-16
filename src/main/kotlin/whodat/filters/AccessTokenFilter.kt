@@ -2,6 +2,7 @@ package no.ssb.whodat.filters
 
 import com.google.auth.oauth2.GoogleCredentials
 import io.micronaut.context.ApplicationContext
+import io.micronaut.context.annotation.Requires
 import io.micronaut.context.annotation.Value
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MutableHttpRequest
@@ -21,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
  */
 @AccessTokenFilterMatcher
 @Singleton
+@Requires(property = "gcp.http.client.filter.enabled", notEquals = "false", defaultValue = "true")
 class AccessTokenFilter(
     @Value($$"${gcp.http.client.filter.credentials-path}") credentialsPath: String?,
     @param:Value($$"${gcp.http.client.filter.project-id}") private val projectId: String?,
