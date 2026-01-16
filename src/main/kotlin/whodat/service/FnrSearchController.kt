@@ -72,13 +72,10 @@ open class FnrSearchController(
                         requestSemaphore.withPermit {
                             // Jitter in order to avoid stampeding FREG service
                             delay(Random.nextLong(0, 10))
-
-                            val token = maskinportenTokenExchanger.getToken("token")
-
                             fregClient.searchFnr(
-                                "Bearer $token",
                                 FregClientRequest.from(variable, request.whodatModifiers),
                                 rowIndex,
+                                fetchToken = { "Bearer ${maskinportenTokenExchanger.getToken("token")}" }
                             )
                         }
                     }
