@@ -22,6 +22,8 @@ repositories {
 }
 
 dependencies {
+    // Pin Netty artifacts to a patched version for known vulnerabilities.
+    implementation(platform(libs.netty.bom))
     ksp(libs.micronaut.http.validation)
     ksp(libs.micronaut.serde.processor)
     ksp(libs.micronaut.openapi)
