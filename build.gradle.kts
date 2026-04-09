@@ -104,7 +104,7 @@ jib {
         jvmFlags = listOf("--add-opens=java.base/java.lang=ALL-UNNAMED")
     }
     from {
-        image = "gcr.io/distroless/java21-debian12@sha256:70e8a4991b6e37cb1eb8eac3b717ed0d68407d1150cf30235d50cd33b2c44f7e"
+        image = "gcr.io/distroless/java21-debian13@sha256:bcdca3804642f766b51c188aa1d080a1bf59bb0dc03361d6cba7636b78597d4e"
         platforms {
             platform {
                 architecture = "amd64"
