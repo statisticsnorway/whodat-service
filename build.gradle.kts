@@ -13,7 +13,7 @@ plugins {
     alias(libs.plugins.cyclonedx)
 }
 
-version = "1.2.4"
+version = "1.2.5"
 group = "no.ssb.whodat"
 
 val kotlinVersion = project.properties["kotlinVersion"]
