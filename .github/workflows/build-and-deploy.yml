@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set nais environment variables
         id: nais-deploy-vars
@@ -105,7 +105,7 @@ jobs:
       id-token: "write"
     needs: docker-build
     steps:
-      - uses: actions/checkout@v5 # Needed for access to manifests
+      - uses: actions/checkout@v6 # Needed for access to manifests
 
       - uses: actions/create-github-app-token@v2
         id: app-token
@@ -115,7 +115,7 @@ jobs:
           owner: statisticsnorway
           repositories: dapla-stat-iac
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         name: Retrieve protected configuration
         with:
           repository: "statisticsnorway/dapla-stat-iac"
