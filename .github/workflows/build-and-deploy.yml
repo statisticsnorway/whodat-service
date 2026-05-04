@@ -107,7 +107,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6 # Needed for access to manifests
 
-      - uses: actions/create-github-app-token@v2
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           app-id: ${{ secrets.DAPLA_BOT_APP_ID }}
