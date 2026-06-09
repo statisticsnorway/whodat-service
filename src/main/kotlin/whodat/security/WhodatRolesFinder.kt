@@ -29,8 +29,12 @@ class WhodatRolesFinder(
 ) : RolesFinder {
     private val log = LoggerFactory.getLogger(WhodatRolesFinder::class.java)
 
-    override fun resolveRoles(attributes: Map<String, Any>): List<String> {
+    override fun resolveRoles(attributes: Map<String, Any>?): List<String> {
         return runBlocking(Dispatchers.IO) {
+            if (attributes == null) {
+                return@runBlocking emptyList()
+            }
+
             // We need to run this in a blocking manner, since we do not control the interface.
             val roles = mutableSetOf<String>()
             val trustedIssuer = isTrustedIssuer(attributes)

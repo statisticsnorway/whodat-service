@@ -1,4 +1,3 @@
-import com.google.devtools.ksp.KspExperimental
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -22,8 +21,6 @@ repositories {
 }
 
 dependencies {
-    // Pin Netty artifacts to a patched version for known vulnerabilities.
-    implementation(platform(libs.netty.bom))
     ksp(libs.micronaut.http.validation)
     ksp(libs.micronaut.serde.processor)
     ksp(libs.micronaut.openapi)
@@ -65,10 +62,10 @@ application {
     mainClass = "no.ssb.whodat.ApplicationKt"
 }
 java {
-    sourceCompatibility = JavaVersion.toVersion("21")
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
 }
 
 graalvmNative.toolchainDetection = false
@@ -104,7 +101,7 @@ jib {
         jvmFlags = listOf("--add-opens=java.base/java.lang=ALL-UNNAMED")
     }
     from {
-        image = "gcr.io/distroless/java21-debian13@sha256:bcdca3804642f766b51c188aa1d080a1bf59bb0dc03361d6cba7636b78597d4e"
+       image = "gcr.io/distroless/java25-debian13@sha256:e45f456b6e83269d95145de818aaabefe735f4625d4a3d0df992c4af0dd75ba3"
         platforms {
             platform {
                 architecture = "amd64"
@@ -153,7 +150,7 @@ tasks.register<JavaExec>("runLocal") {
 }
 
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
-    jdkVersion = "21"
+    jdkVersion = "25"
 }
 
 val versionFile = file("build.gradle.kts")
