@@ -29,10 +29,10 @@ class WhodatRolesFinder(
 ) : RolesFinder {
     private val log = LoggerFactory.getLogger(WhodatRolesFinder::class.java)
 
-    override fun resolveRoles(attributes: MutableMap<String, Any>?): MutableList<String> {
+    override fun resolveRoles(attributes: Map<String, Any>?): List<String> {
         return runBlocking(Dispatchers.IO) {
             if (attributes == null) {
-                return@runBlocking mutableListOf()
+                return@runBlocking emptyList()
             }
 
             // We need to run this in a blocking manner, since we do not control the interface.
@@ -48,7 +48,7 @@ class WhodatRolesFinder(
                 }
 
             if (email == null) {
-                return@runBlocking mutableListOf()
+                return@runBlocking emptyList()
             }
 
             val activeEnvironments = applicationContext.environment.activeNames
@@ -79,7 +79,7 @@ class WhodatRolesFinder(
             }
             log.debug("Resolved roles {} for user {}", roles, email)
 
-            return@runBlocking roles.toMutableList()
+            return@runBlocking roles.toList()
         }
     }
 
