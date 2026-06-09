@@ -14,7 +14,7 @@ kotlinxCoroutines = "1.10.2"
 ksp = "2.3.9"
 ktlint = "14.2.0"
 logback = "1.5.32"
-netty = "4.2.15.Final"
+
 micronaut = "5.0.2"
 micronautAop = "5.0.2"
 micronautCache = "6.0.0"
@@ -56,7 +56,7 @@ micronaut-security-jwt = { module = "io.micronaut.security:micronaut-security-jw
 micronaut-security-annotations = { module = "io.micronaut.security:micronaut-security-annotations", version.ref = "micronautSecurity" }
 micronaut-serde-jackson = { module = "io.micronaut.serde:micronaut-serde-jackson", version.ref = "micronautSerde" }
 micronaut-serde-processor = { module = "io.micronaut.serde:micronaut-serde-processor", version.ref = "micronautSerde" }
-netty-bom = { module = "io.netty:netty-bom", version.ref = "netty" }
+
 snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
 micronaut-gcp-common = { module = "io.micronaut.gcp:micronaut-gcp-common", version.ref = "micronautGcp" }
 micronaut-gcp-secret-manager = { module = "io.micronaut.gcp:micronaut-gcp-secret-manager", version.ref = "micronautGcp" }
