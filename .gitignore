@@ -17,3 +17,5 @@ out/
 src/main/resources/application-local.yml
 .kotlin/
 bin/
+.direnv/
+.envrc
