@@ -34,7 +34,7 @@ ulidKotlin = "1.5.0"
 mockk="1.13.2"
 micronautRetry="5.0.2"
 mockwebserver="4.12.0"
-kotlinxCoroutinesTest="1.8.1"
+kotlinxCoroutinesTest="1.11.0"
 
 
 [libraries]
