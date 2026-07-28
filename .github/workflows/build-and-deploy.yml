@@ -89,7 +89,7 @@ jobs:
           echo "DOCKER_IMAGE_DIGEST=$(cat build/jib-image.digest)" >> $GITHUB_ENV
 
       - name: "Attest and sign"
-        uses: "nais/attest-sign@47aaa4acd4986b43cf388640e14fb87761119c7b" # v2.0.13
+        uses: "nais/attest-sign@bb00e4baa4e7acd00b6aff2502b2dfed3d4fad40" # v2.0.14
         with:
           image_ref: ${{ env.DOCKER_IMAGE_WITHOUT_TAG }}@${{ env.DOCKER_IMAGE_DIGEST }}
           # This SBOM includes all JVM dependencies (generated with cyclonedxBom) but does
