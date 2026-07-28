@@ -4,20 +4,20 @@
 # Each block is sorted alphabetically.
 
 [versions]
-caffeineCache = "3.2.2"
+caffeineCache = "3.2.4"
 cyclonedx = "2.3.1"
 gradleShadow = "9.4.1"
 jackson = "2.21.1"
 jib = "3.4.5"
 kotlin = "2.4.0"
-kotlinxCoroutines = "1.10.2"
+kotlinxCoroutines = "1.11.0"
 ksp = "2.3.9"
 ktlint = "14.2.0"
-logback = "1.5.32"
+logback = "1.5.34"
 
 micronaut = "5.0.2"
 micronautAop = "5.0.2"
-micronautCache = "6.0.0"
+micronautCache = "6.1.0"
 micronautGcp = "6.0.0"
 micronautGradle = "5.0.0"
 micronautManagement = "5.0.2"
@@ -28,13 +28,13 @@ micronautSecurity = "5.0.0"
 micronautSerde = "3.0.0"
 micronautTest = "5.0.1"
 micronautValidation = "5.0.0"
-snakeyaml = "2.4"
+snakeyaml = "2.6"
 reactor = "3.7.12"
 ulidKotlin = "1.5.0"
 mockk="1.13.2"
 micronautRetry="5.0.2"
 mockwebserver="4.12.0"
-kotlinxCoroutinesTest="1.8.1"
+kotlinxCoroutinesTest="1.11.0"
 
 
 [libraries]
