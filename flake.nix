@@ -13,6 +13,12 @@
         devShells.default = pkgs.mkShell {
           name = "devenv";
 
+          JAVA_HOME = pkgs.openjdk25_headless;
+
+          shellHook = ''
+            export PATH="$JAVA_HOME/bin:$PATH"
+          '';
+
           packages = with pkgs; [
             gradle_9
             kotlin
@@ -20,6 +26,7 @@
             kotlin-language-server
             nixd
             openjdk25_headless
+            trivy
           ];
         };
 
