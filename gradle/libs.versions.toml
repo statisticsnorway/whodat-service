@@ -6,7 +6,7 @@
 [versions]
 caffeineCache = "3.2.4"
 cyclonedx = "2.3.1"
-gradleShadow = "9.4.1"
+gradleShadow = "9.6.1"
 jackson = "2.21.1"
 jib = "3.4.5"
 kotlin = "2.3.21"
