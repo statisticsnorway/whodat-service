@@ -71,13 +71,22 @@ data class FregClientResponse(
 @RateLimitRetryFilterMatcher
 @Client(id = "freg")
 interface FregClient {
+    companion object {
+        private val log = LoggerFactory.getLogger(FregClient::class.java)
+    }
+
     @Get("/folkeregisteret/offentlig-med-hjemmel/api/v1/personer/soek{?request*}")
     @Consumes(APPLICATION_JSON)
-    @Retryable(predicate = FregRetryPredicate::class, attempts = "5", delay = "2s")
-    suspend fun searchFnrInternal(
+    suspend fun requestFnr(
         @Header authorization: String,
         @QueryValue request: FregClientRequest,
     ): FregClientResponse
+
+    @Retryable(predicate = FregRetryPredicate::class, attempts = "5", delay = "2s")
+    suspend fun searchFnrInternal(
+        request: FregClientRequest,
+        fetchToken: suspend () -> String,
+    ): FregClientResponse = requestFnr(fetchToken(), request)
 
     suspend fun searchFnr(
         req: FregClientRequest,
@@ -85,9 +94,15 @@ interface FregClient {
         fetchToken: suspend () -> String
     ): FregClientResponse {
         try {
-                val token = fetchToken()
-                return searchFnrInternal(token, req)
+            return searchFnrInternal(req, fetchToken)
         } catch (e: HttpClientResponseException) {
+            log.error(
+                "FREG request failed for row {}: status={} body={}",
+                rowIndex,
+                e.status.code,
+                e.response.getBody(String::class.java).orElse("<no body>"),
+                e,
+            )
             throw FregUpstreamException(e, rowIndex)
         }
     }
