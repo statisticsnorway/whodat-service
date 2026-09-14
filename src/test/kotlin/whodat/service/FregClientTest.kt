@@ -93,14 +93,17 @@ class FregClientTest : TestPropertyProvider {
 
     private suspend fun invokeSearchAndExpectFailure(): Int {
         val baseline = server.requestCount
+        var tokenFetches = 0
         assertThrows<FregUpstreamException> {
             fregClient.searchFnr(
                 req = FregClientRequest(navn = "Test"),
                 rowIndex = 1,
-                fetchToken = { "Bearer dummy-token" }
+                fetchToken = { "Bearer dummy-token-${++tokenFetches}" }
             )
         }
-        return server.requestCount - baseline
+        val attempts = server.requestCount - baseline
+        assertEquals(attempts, tokenFetches, "Each request attempt should fetch a token")
+        return attempts
     }
 
     private fun setResponse(status: Int, body: String) {
