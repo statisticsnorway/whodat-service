@@ -1,3 +1,4 @@
+import org.cyclonedx.model.Component
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -15,7 +16,7 @@ plugins {
 version = "1.2.7"
 group = "no.ssb.whodat"
 
-val kotlinVersion = project.properties["kotlinVersion"]
+val kotlinVersion = libs.versions.kotlin.get()
 repositories {
     mavenCentral()
 }
@@ -92,8 +93,12 @@ micronaut {
 }
 
 tasks.cyclonedxBom {
-    setIncludeConfigs(listOf("runtimeClasspath"))
-    setProjectType("application")
+    projectType = Component.Type.APPLICATION
+}
+
+tasks.cyclonedxDirectBom {
+    includeConfigs = listOf("runtimeClasspath")
+    projectType = Component.Type.APPLICATION
 }
 
 jib {
@@ -200,7 +205,7 @@ tasks.register("versionPatch") {
     }
 }
 
-val compileKotlin: KotlinCompile by tasks
+val compileKotlin = tasks.getByName<KotlinCompile>("compileKotlin")
 compileKotlin.compilerOptions {
     freeCompilerArgs.set(listOf("-Xmulti-dollar-interpolation"))
 }
