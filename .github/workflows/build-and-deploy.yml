@@ -130,7 +130,7 @@ jobs:
           ext_config_dir="ext-config/apps/nais/whodat-service/${{ needs.docker-build.outputs.nais_cluster }}"
           echo "ext_config=${ext_config_dir}" >> $GITHUB_ENV
 
-      - uses: nais/deploy/actions/deploy@027a91857992525139798892f2804b0ca21f4af6 # v2
+      - uses: nais/deploy/actions/deploy@7ad7c2b833e1db74a80954e3ee6bb6ac060a8ae7 # v2
         env:
           CLUSTER: ${{ needs.docker-build.outputs.nais_cluster }}
           RESOURCE: ${{ needs.docker-build.outputs.nais_config_path }},${{ env.ext_config }}/app-roles.yml
