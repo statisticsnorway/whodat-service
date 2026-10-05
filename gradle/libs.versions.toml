@@ -4,7 +4,7 @@
 # Each block is sorted alphabetically.
 
 [versions]
-caffeineCache = "3.2.4"
+caffeineCache = "3.3.0"
 cyclonedx = "3.4.1"
 gradleShadow = "9.6.1"
 jackson = "2.21.1"
