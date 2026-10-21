@@ -15,24 +15,25 @@ ksp = "2.3.9"
 ktlint = "14.2.0"
 logback = "1.6.0"
 
-micronaut = "5.1.0"
-micronautAop = "5.1.13"
+micronaut = "5.2.3"
+micronautCore = "5.2.17"
+micronautAop = "5.2.17"
 micronautCache = "6.1.1"
-micronautGcp = "6.1.0"
+micronautGcp = "6.2.0"
 micronautGradle = "5.0.0"
-micronautManagement = "5.2.5"
-micronautMicrometer = "6.0.2"
+micronautManagement = "5.2.17"
+micronautMicrometer = "6.1.0"
 micronautKotlin = "5.1.0"
-micronautOpenapi = "7.2.0"
-micronautSecurity = "5.4.0"
-micronautSerde = "3.1.0"
-micronautTest = "5.1.0"
-micronautValidation = "5.1.0"
+micronautOpenapi = "7.3.0"
+micronautSecurity = "5.4.1"
+micronautSerde = "3.2.5"
+micronautTest = "5.2.0"
+micronautValidation = "5.2.1"
 snakeyaml = "2.6"
 reactor = "3.7.12"
 ulidKotlin = "1.6.0"
 mockk="1.13.2"
-micronautRetry="5.1.10"
+micronautRetry="5.2.17"
 mockwebserver="4.12.0"
 kotlinxCoroutinesTest="1.11.0"
 
@@ -46,8 +47,8 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor", version.ref = "kotlinxCoroutines" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 micronaut-kotlin-runtime = { module = "io.micronaut.kotlin:micronaut-kotlin-runtime", version.ref = "micronautKotlin" }
-micronaut-http-client = { module = "io.micronaut:micronaut-http-client", version.ref = "micronaut" }
-micronaut-http-validation = { module = "io.micronaut:micronaut-http-validation", version.ref = "micronaut" }
+micronaut-http-client = { module = "io.micronaut:micronaut-http-client", version.ref = "micronautCore" }
+micronaut-http-validation = { module = "io.micronaut:micronaut-http-validation", version.ref = "micronautCore" }
 micronaut-management = { module = "io.micronaut:micronaut-management", version.ref = "micronautManagement" }
 micronaut-micrometer-registry-prometheus = { module = "io.micronaut.micrometer:micronaut-micrometer-registry-prometheus", version.ref = "micronautMicrometer" }
 micronaut-openapi = { module = "io.micronaut.openapi:micronaut-openapi", version.ref = "micronautOpenapi" }
