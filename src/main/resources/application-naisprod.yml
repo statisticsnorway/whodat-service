@@ -9,7 +9,7 @@ micronaut:
   http:
     client:
       pool:
-        connection-locality: enforced-always
+        connection-locality: preferred
       event-loop-group: http-client
       read-timeout: 20s
     services:
