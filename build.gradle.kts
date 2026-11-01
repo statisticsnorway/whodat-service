@@ -13,7 +13,7 @@ plugins {
     alias(libs.plugins.cyclonedx)
 }
 
-version = "1.2.10"
+version = "1.2.11"
 group = "no.ssb.whodat"
 
 repositories {
