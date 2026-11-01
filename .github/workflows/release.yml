@@ -54,5 +54,5 @@ jobs:
         with:
           publish: true
           tag: ${{ steps.check-version.outputs.tag }}
-        env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          # Must be the app token: releases published with github.token don't trigger build-and-deploy.yml
+          token: ${{ steps.generate_token.outputs.token }}
