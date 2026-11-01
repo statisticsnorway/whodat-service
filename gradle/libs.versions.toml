@@ -16,7 +16,7 @@ ktlint = "14.2.0"
 logback = "1.6.0"
 
 micronaut = "5.2.3"
-micronautCore = "5.2.17"
+micronautCore = "5.2.20"
 micronautAop = "5.2.17"
 micronautCache = "6.1.1"
 micronautGcp = "6.2.0"
