@@ -16,7 +16,6 @@ plugins {
 version = "1.2.10"
 group = "no.ssb.whodat"
 
-val kotlinVersion = libs.versions.kotlin.get()
 repositories {
     mavenCentral()
 }
@@ -25,6 +24,9 @@ dependencies {
     ksp(libs.micronaut.http.validation)
     ksp(libs.micronaut.serde.processor)
     ksp(libs.micronaut.openapi)
+    // micronaut-platform 5.2.4 still pins jackson 2.22.2 (CVE-2026-89407, -89425, -91776, -91777)
+    // remove this when micronaut-platform ships a jackson version (2.22.4) that fixes these vulns
+    implementation(platform(libs.jackson.bom))
     implementation(libs.micronaut.kotlin.runtime)
     implementation(libs.micronaut.serde.jackson)
     implementation(libs.kotlin.reflect)
@@ -106,7 +108,7 @@ jib {
         jvmFlags = listOf("--add-opens=java.base/java.lang=ALL-UNNAMED")
     }
     from {
-        image = "gcr.io/distroless/java25-debian13@sha256:bec4da3475c42ef0a276dec88d906e04c5042844d484566839916ee15cba23d6"
+        image = "gcr.io/distroless/java25-debian13@sha256:d72c7b79a8c4babd6a69cf00979c9eed7f87e3e2b7d6871c6a0e9f91ff626cea"
         platforms {
             platform {
                 architecture = "amd64"
