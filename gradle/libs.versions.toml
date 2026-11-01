@@ -7,7 +7,7 @@
 caffeineCache = "3.3.0"
 cyclonedx = "3.4.1"
 gradleShadow = "9.6.1"
-jackson = "2.21.1"
+jackson = "2.22.4"
 jib = "3.4.5"
 kotlin = "2.4.21"
 kotlinxCoroutines = "1.11.0"
@@ -15,7 +15,7 @@ ksp = "2.3.9"
 ktlint = "14.2.0"
 logback = "1.6.0"
 
-micronaut = "5.2.3"
+micronaut = "5.2.4"
 micronautCore = "5.2.17"
 micronautAop = "5.2.17"
 micronautCache = "6.1.1"
@@ -40,6 +40,7 @@ kotlinxCoroutinesTest="1.11.0"
 
 [libraries]
 caffeine-cache = {module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeineCache"}
+jackson-bom = { module = "com.fasterxml.jackson:jackson-bom", version.ref = "jackson" }
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }

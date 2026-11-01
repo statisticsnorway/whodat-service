@@ -24,6 +24,9 @@ dependencies {
     ksp(libs.micronaut.http.validation)
     ksp(libs.micronaut.serde.processor)
     ksp(libs.micronaut.openapi)
+    // micronaut-platform 5.2.4 still pins jackson 2.22.2 (CVE-2026-89407, -89425, -91776, -91777)
+    // remove this when micronaut-platform ships a jackson version (2.22.4) that fixes these vulns
+    implementation(platform(libs.jackson.bom))
     implementation(libs.micronaut.kotlin.runtime)
     implementation(libs.micronaut.serde.jackson)
     implementation(libs.kotlin.reflect)
