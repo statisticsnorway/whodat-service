@@ -11,6 +11,9 @@ on:
       - 'gradlew'
       - 'gradlew.bat'
       - '.github/workflows/run-tests.yaml'
+  pull_request:
+  merge_group:
+
 
 permissions:
   contents: read
@@ -38,6 +41,5 @@ jobs:
           cache-provider: basic
 
       - name: Build and test project
-        run: >
-          ./gradlew
-          test
+        run: |
+          ./gradlew test
