@@ -58,4 +58,4 @@ spec:
             service: whodat-service
             namespace: dapla-stat
             severity: critical
-            environment: prod
+            environment: test
