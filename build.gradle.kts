@@ -36,6 +36,7 @@ dependencies {
     implementation(libs.micronaut.cache.core)
     implementation(libs.micronaut.aop)
     implementation(libs.micronaut.management)
+    implementation(libs.micronaut.micrometer.registry.prometheus)
     implementation(libs.micronaut.openapi.annotations)
     implementation(libs.micronaut.security.jwt)
     implementation(libs.micronaut.http.client)
