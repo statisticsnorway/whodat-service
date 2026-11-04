@@ -1,6 +1,11 @@
 micronaut:
   application:
     name: whodat-service
+  metrics:
+    enabled: true
+    export:
+      prometheus:
+        enabled: true
   server:
     idle-timeout: 360s
     port: 9191
@@ -77,6 +82,8 @@ micronaut:
 endpoints:
   all:
     port: 11100
+  prometheus:
+    sensitive: false
   environments:
     enabled: true
     sensitive: false
