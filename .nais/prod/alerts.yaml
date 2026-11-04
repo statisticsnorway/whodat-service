@@ -35,13 +35,13 @@ spec:
             severity: critical
             environment: prod
 
-        - alert: whodat-service receives high number of 403 responses from Skatteetaten
+        - alert: High number of 403 responses from Skatteetatens API
           expr: sum(increase(http_client_requests_seconds_count{app="whodat-service", uri="/folkeregisteret/offentlig-med-hjemmel/api/v1/personer/soek", status="403"}[1h])) > 100
           for: 5m
           annotations:
-            title: "High number of 403 responses from Skatteetaten"
-            consequence: "Requests to the Skatteetaten's API are being rejected, which causes search failures for users."
-            description: "whodat-service has received {{ $value | humanize }} 403 responses in the last hour from Skatteetaten's API."
+            title: "High number of 403 responses from Skatteetatens API"
+            consequence: "Some searches may fail because requests to Skatteetatens API are being rejected."
+            description: "More than 100 forbidden responses from Skatteetatens API were recorded in one hour (current count: {{ $value | humanize }})."
           labels:
             service: whodat-service
             namespace: dapla-stat
